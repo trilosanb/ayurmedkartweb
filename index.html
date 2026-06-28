@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AyurMedKart - Authentic Ayurvedic Medicine Store</title>
+  <!-- FontAwesome for Premium Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <!-- NAVIGATION HEADER -->
+  <header>
+    <div class="container header-container">
+      <a href="#" class="logo" data-target="shop">
+        <img src="logo.png" alt="AyurMedKart Logo" style="height: 40px; width: auto; object-fit: contain;">
+        Ayur<span>MedKart</span>
+      </a>
+
+      <button class="menu-btn" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav>
+        <a href="#" class="active" data-target="shop">Medicine Store</a>
+        <a href="#" data-target="dashboard">Patient Dashboard</a>
+        <a href="#" data-target="admin">Admin Panel</a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Interactive Cart Trigger Button -->
+        <button class="cart-icon-btn" id="open-cart-sidebar" aria-label="Open Cart">
+          <i class="fas fa-shopping-basket"></i>
+          <span class="badge cart-count-badge" style="display: none;">0</span>
+        </button>
+
+        <button class="notification-icon-btn" aria-label="Notifications">
+          <i class="far fa-bell"></i>
+          <span class="badge">1</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- STORE/MARKETPLACE VIEW SECTION (NOW HOMEPAGE) -->
+  <section id="shop" class="view-section active">
+    <div class="container" style="padding-top: 20px; padding-bottom: 80px;">
+
+      <!-- Search & Sorting toolbar (At the absolute top) -->
+      <div class="search-sort-bar" style="margin-bottom: 20px;">
+        <div class="search-input-wrapper">
+          <i class="fas fa-search"></i>
+          <input type="text" id="search-products" placeholder="Search medicines by name, ingredients, or brand...">
+        </div>
+
+        <select id="sort-products" class="sort-select">
+          <option value="default">Sort by: Relevance</option>
+          <option value="low-high">Price: Low to High</option>
+          <option value="high-low">Price: High to Low</option>
+          <option value="rating">Top Rated</option>
+        </select>
+      </div>
+
+      <!-- Small Program Tags Row (Pills instead of bulky boxes) -->
+      <div class="program-tags">
+        <button class="tag-btn active" data-condition="all">All Programs</button>
+        <button class="tag-btn" data-condition="diabetes"><i class="fas fa-heartbeat"></i> Diabetes Care</button>
+        <button class="tag-btn" data-condition="digestion"><i class="fas fa-apple-alt"></i> Digestive Care</button>
+        <button class="tag-btn" data-condition="immunity"><i class="fas fa-shield-alt"></i> Immunity Boost</button>
+        <button class="tag-btn" data-condition="women"><i class="fas fa-female"></i> Women's Health</button>
+        <button class="tag-btn" data-condition="stress"><i class="fas fa-brain"></i> Stress Management</button>
+        <button class="tag-btn" data-condition="skin"><i class="fas fa-spa"></i> Skin & Hair</button>
+      </div>
+      <div class="store-layout">
+        <!-- Sidebar filters -->
+        <aside class="store-sidebar">
+          <div class="sidebar-title">
+            <span>Filter Catalog</span>
+            <button id="clear-filters" class="clear-filters-btn">Clear All</button>
+          </div>
+
+          <!-- Category filter -->
+          <div class="filter-group">
+            <h5>Health Category</h5>
+            <div class="filter-options">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="category" value="immunity"> Immunity Boosters
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="category" value="digestive"> Digestive Care
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="category" value="women"> Women's Wellness
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="category" value="preventive"> Joint & Vitality
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="category" value="skin"> Skin & Hair
+              </label>
+            </div>
+          </div>
+
+          <!-- Condition filter -->
+          <div class="filter-group">
+            <h5>Health Condition</h5>
+            <div class="filter-options">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="condition" value="stress"> Anxiety & Stress
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="condition" value="digestion"> Bloating & Acidity
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="condition" value="diabetes"> High Blood Sugar
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="condition" value="arthritis"> Joint Inflammation
+              </label>
+            </div>
+          </div>
+
+          <!-- Formulation Type -->
+          <div class="filter-group">
+            <h5>Formulation Type</h5>
+            <div class="filter-options">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="formulation" value="capsule"> Capsules
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="formulation" value="tablet"> Tablets
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="formulation" value="powder"> Churna (Powder)
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" data-filter="formulation" value="syrup"> Liquids & Syrups
+              </label>
+            </div>
+          </div>
+
+          <!-- Price limits -->
+          <div class="filter-group">
+            <h5>Price Range (₹)</h5>
+            <div class="price-range-inputs">
+              <input type="number" id="price-min" placeholder="Min" min="0">
+              <span style="color: var(--text-muted);">to</span>
+              <input type="number" id="price-max" placeholder="Max" min="0">
+            </div>
+          </div>
+        </aside>
+
+        <!-- Catalog main container -->
+        <main class="store-main">
+
+          <!-- Catalog grids (loaded dynamically) -->
+          <div class="product-grid" id="products-container">
+            <!-- Injected via app.js -->
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <!-- PATIENT DASHBOARD VIEW SECTION -->
+  <section id="dashboard" class="view-section">
+    <div class="container section-padding">
+      <div class="dashboard-layout">
+        
+        <!-- Dashboard Navigation Sidebar -->
+        <aside class="dashboard-sidebar">
+          <div class="user-profile-summary">
+            <div class="user-avatar-placeholder">RK</div>
+            <h4>Rahul Kumar</h4>
+            <p>Patient ID: AMK-229182</p>
+          </div>
+
+          <nav class="dash-nav">
+            <button class="dash-nav-btn active" data-dash-tab="orders">
+              <i class="fas fa-box-open"></i> Pharmacy Orders
+            </button>
+            <button class="dash-nav-btn" data-dash-tab="prescriptions">
+              <i class="fas fa-file-prescription"></i> Prescription Vault
+            </button>
+            <button class="dash-nav-btn" data-dash-tab="ehr">
+              <i class="fas fa-folder-open"></i> Health Vault (EHR)
+            </button>
+          </nav>
+        </aside>
+
+        <!-- Tab content boxes -->
+        <main class="dashboard-content-box">
+          
+          <!-- Tab 1: Order History & Tracking -->
+          <div id="dash-tab-orders" class="dashboard-tab-panel active">
+            <div class="dashboard-header">
+              <h3 style="margin: 0; color: var(--primary);">Medicine Orders</h3>
+              <button class="btn btn-outline btn-sm btn-shop-medicines"><i class="fas fa-store"></i> Shop More</button>
+            </div>
+            <div id="dashboard-orders-list">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
+          <!-- Tab 2: Prescriptions -->
+          <div id="dash-tab-prescriptions" class="dashboard-tab-panel">
+            <div class="dashboard-header">
+              <h3 style="margin: 0; color: var(--primary);">Uploaded Prescriptions</h3>
+              <button class="btn btn-secondary btn-sm" onclick="openModal('prescription-upload-modal')"><i class="fas fa-upload"></i> Upload Prescription</button>
+            </div>
+            <div id="dashboard-prescriptions-list">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
+          <!-- Tab 3: EHR -->
+          <div id="dash-tab-ehr" class="dashboard-tab-panel">
+            <div class="dashboard-header">
+              <h3 style="margin: 0; color: var(--primary);">Health Vault (EHR)</h3>
+              <div style="position: relative;">
+                <input type="file" id="ehr-file-upload-input" style="display: none;">
+                <button class="btn btn-primary btn-sm" onclick="document.getElementById('ehr-file-upload-input').click()"><i class="fas fa-file-upload"></i> Upload Diagnostics</button>
+              </div>
+            </div>
+            <div id="dashboard-ehr-list">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMINISTRATIVE VIEW SECTION -->
+  <section id="admin" class="view-section">
+    <div class="container section-padding">
+      <h2 class="section-title">AyurMedKart Administration Panel</h2>
+      <p class="section-subtitle">Real-time control dashboard for patient records, inventory levels, and medicine order shipments.</p>
+
+      <!-- Key Admin stats counters -->
+      <div class="admin-stats-grid">
+        <div class="stat-tile">
+          <div class="stat-tile-header">
+            <span>Pharmacy Sales</span>
+            <i class="fas fa-rupee-sign"></i>
+          </div>
+          <div class="stat-tile-value" id="admin-sales-stat">₹0</div>
+        </div>
+
+        <div class="stat-tile">
+          <div class="stat-tile-header">
+            <span>Customer Orders</span>
+            <i class="fas fa-shopping-bag"></i>
+          </div>
+          <div class="stat-tile-value" id="admin-orders-stat">0</div>
+        </div>
+
+        <div class="stat-tile">
+          <div class="stat-tile-header">
+            <span>Pending Prescriptions</span>
+            <i class="fas fa-file-medical"></i>
+          </div>
+          <div class="stat-tile-value" id="admin-pending-rx-stat">0</div>
+        </div>
+
+        <div class="stat-tile">
+          <div class="stat-tile-header">
+            <span>Active SKU Stock</span>
+            <i class="fas fa-boxes"></i>
+          </div>
+          <div class="stat-tile-value" id="admin-inventory-stat">0</div>
+        </div>
+      </div>
+
+      <div class="admin-grid-split">
+        <!-- Left Column: Verification list & list of practitioners -->
+        <div>
+          <!-- Verification Queue -->
+          <div class="admin-card">
+            <h3>Prescription Verification Queue</h3>
+            <div id="admin-prescription-queue">
+              <!-- Injected via app.js -->
+            </div>
+          </div>
+
+          <!-- Store inventory management table -->
+          <div class="admin-card">
+            <h3>Store Inventory SKU Management</h3>
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Medicine Name</th>
+                    <th>Manufacturer</th>
+                    <th>Price</th>
+                    <th>Classification</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-inventory-table-body">
+                  <!-- Injected via app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Add medicine form & Order fulfillment statuses -->
+        <div>
+          <!-- Add Medicine Form -->
+          <div class="admin-card">
+            <h3>Add New Medicine SKU</h3>
+            <form id="admin-add-medicine-form" class="booking-form">
+              <div class="form-group">
+                <label for="admin-med-name">Medicine Name</label>
+                <input type="text" id="admin-med-name" required placeholder="e.g. Brahmi Capsules">
+              </div>
+              <div class="form-group">
+                <label for="admin-med-mfg">Manufacturer</label>
+                <input type="text" id="admin-med-mfg" required placeholder="e.g. Himalaya Wellness">
+              </div>
+              <div class="form-group">
+                <label for="admin-med-price">Selling Price (₹)</label>
+                <input type="number" id="admin-med-price" required value="200">
+              </div>
+              <div class="form-group">
+                <label for="admin-med-origprice">Original Price (₹)</label>
+                <input type="number" id="admin-med-origprice" required value="250">
+              </div>
+              <div class="form-group">
+                <label for="admin-med-category">Category</label>
+                <select id="admin-med-category">
+                  <option value="immunity">Immunity Booster</option>
+                  <option value="digestive">Digestive Care</option>
+                  <option value="women">Women's Wellness</option>
+                  <option value="preventive">Joint & Vitality</option>
+                  <option value="skin">Skin & Hair</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="admin-med-condition">Health Condition Key</label>
+                <select id="admin-med-condition">
+                  <option value="stress">Anxiety & Stress</option>
+                  <option value="digestion">Bloating & Acidity</option>
+                  <option value="diabetes">High Blood Sugar</option>
+                  <option value="arthritis">Joint Inflammation</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="admin-med-formulation">Formulation</label>
+                <select id="admin-med-formulation">
+                  <option value="capsule">Capsule</option>
+                  <option value="tablet">Tablet</option>
+                  <option value="powder">Churna (Powder)</option>
+                  <option value="syrup">Liquid/Syrup</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="admin-med-rx">Prescription Required?</label>
+                <select id="admin-med-rx">
+                  <option value="no">No (OTC Item)</option>
+                  <option value="yes">Yes (Rx Only)</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;">Add Medicine to Store</button>
+            </form>
+          </div>
+
+          <!-- Order Fulfillment -->
+          <div class="admin-card">
+            <h3>Order Shipments Fulfillment</h3>
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-orders-fulfill-body">
+                  <!-- Injected via app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <a href="#" class="footer-logo">
+          <img src="logo.png" alt="AyurMedKart Logo" style="height: 35px; width: auto; object-fit: contain;">
+          Ayur<span>MedKart</span>
+        </a>
+        <p style="margin-top: 16px; font-size: 13.5px;">AyurMedKart is a premium online pharmacy and medicine store. We merge certified Ayurvedic pharmacies with fast home delivery and secure prescription validation vaults.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-icon" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-icon" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-icon" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-icon" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#" data-target="shop">Medicines Shop</a></li>
+          <li><a href="#" data-target="dashboard">Patient Portal</a></li>
+          <li><a href="#" data-target="admin">Admin System</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Popular Conditions</h4>
+        <ul>
+          <li><a href="#" class="footer-program-link" data-condition="diabetes">Blood Sugar Control</a></li>
+          <li><a href="#" class="footer-program-link" data-condition="digestion">Gastric Acid Relief</a></li>
+          <li><a href="#" class="footer-program-link" data-condition="stress">Insomnia & Stress</a></li>
+          <li><a href="#" class="footer-program-link" data-condition="skin">Psoriasis & Hairfall</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact Support</h4>
+        <p style="font-size: 13px; margin-bottom: 12px;"><i class="fas fa-map-marker-alt" style="color: var(--secondary); margin-right: 8px;"></i> Sector-62, Ayurvedic Complex, Noida, UP, India</p>
+        <p style="font-size: 13px; margin-bottom: 12px;"><i class="fas fa-phone-alt" style="color: var(--secondary); margin-right: 8px;"></i> +91 120 445 9901</p>
+        <p style="font-size: 13px;"><i class="fas fa-envelope" style="color: var(--secondary); margin-right: 8px;"></i> support@ayurmedkart.com</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2026 AyurMedKart Store. All Rights Reserved. Sourced from certified pharmacies.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== DIALOG MODALS ==================== -->
+
+  <!-- 1. PRODUCT DETAILS MODAL -->
+  <div class="modal-overlay" id="product-details-modal">
+    <div class="modal-dialog wide">
+      <div class="modal-header">
+        <h3>Product Specifications: <span class="modal-title-span"></span></h3>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. MANUAL PRESCRIPTION UPLOAD DIALOG -->
+  <div class="modal-overlay" id="prescription-upload-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Upload Doctor Prescription</h3>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;">Upload a scan or picture of your doctor's prescription. Our medical team will verify it within 10-15 minutes so you can purchase prescription-required formulas.</p>
+        
+        <div class="upload-dropzone" id="upload-dropzone">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <h4>Drag & Drop file here or Click to select</h4>
+          <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 8px;">Supports JPG, PNG, PDF up to 5 MB</p>
+        </div>
+        <input type="file" id="prescription-file-input" style="display: none;" accept=".jpg,.jpeg,.png,.pdf">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" onclick="closeAllModals()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. PRESCRIPTION WARNING VALIDATION MODAL -->
+  <div class="modal-overlay" id="rx-warning-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="color: var(--secondary);"><i class="fas fa-exclamation-triangle"></i> Prescription Validation Required</h3>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 14px; margin-bottom: 16px;">The following item(s) in your basket require a verified prescription before checkout:</p>
+        
+        <ul class="warning-items-list" style="padding-left: 24px; font-size: 13.5px; margin-bottom: 20px; color: var(--text-dark);">
+          <!-- Injected via javascript -->
+        </ul>
+
+        <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5;">To complete this order, you must provide a valid clinical order. Choose one of the options below:</p>
+      </div>
+      <div class="modal-footer" style="flex-direction: column; gap: 10px; align-items: stretch;">
+        <button class="btn btn-secondary" onclick="handleTriggerUploadFromWarning()">
+          <i class="fas fa-upload"></i> Upload Doctor Prescription Image
+        </button>
+        <button class="btn btn-light" onclick="closeAllModals()" style="text-align: center;">Go back to Shopping</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR CART OVERLAY DRAWER -->
+  <div class="cart-sidebar-overlay" id="cart-sidebar-overlay">
+    <div class="cart-sidebar">
+      <div class="cart-sidebar-header">
+        <h3><i class="fas fa-shopping-basket"></i> Your Basket</h3>
+        <button class="close-cart-btn" id="close-cart-btn">&times;</button>
+      </div>
+      
+      <!-- Cart Items list -->
+      <div class="cart-items-list">
+        <!-- Loaded via app.js -->
+      </div>
+
+      <!-- Checkout totals & Actions -->
+      <div class="cart-checkout-box">
+        <div class="form-group" style="flex-direction: row; gap: 8px; margin-bottom: 20px;">
+          <input type="text" id="promo-input" placeholder="Promo Code: e.g. AYUR10" style="flex-grow: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 13px;">
+          <button class="btn btn-primary btn-sm" id="apply-promo-btn" style="padding: 10px 16px;">Apply</button>
+        </div>
+
+        <div class="cart-summary-row">
+          <span>Cart Subtotal:</span>
+          <span id="cart-subtotal">₹0</span>
+        </div>
+        <div class="cart-summary-row" id="cart-discount-row" style="display: none; color: var(--secondary);">
+          <span>Promo Code Discount:</span>
+          <span id="cart-discount-val">-₹0</span>
+        </div>
+        <div class="cart-summary-row">
+          <span>GST Tax (5%):</span>
+          <span id="cart-tax">₹0</span>
+        </div>
+        <div class="cart-summary-row total">
+          <span>Grand Total:</span>
+          <span id="cart-total">₹0</span>
+        </div>
+
+        <button class="btn btn-secondary" id="checkout-btn" style="width: 100%; margin-top: 16px;" disabled>
+          <i class="fas fa-shield-alt"></i> Proceed to Secure Payment
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
