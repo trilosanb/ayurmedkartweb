@@ -55,10 +55,61 @@ export const Navbar = () => {
           </span>
         </Link>
 
-        {/* Navigation Menu */}
+        {/* Navigation Menu (Mobile Drawer & Desktop Nav) */}
         <nav className={isMobileNavOpen ? "active" : ""}>
-          <Link to="/" className={location.pathname === '/' ? 'active' : ''} onClick={() => setIsMobileNavOpen(false)}>Medicine Store</Link>
-          <Link to="/consultation" className={location.pathname === '/consultation' ? 'active' : ''} onClick={() => setIsMobileNavOpen(false)}>E-consultation</Link>
+          {/* Mobile Profile Header inside Drawer */}
+          <div className="mobile-drawer-profile-box">
+            {auth.isLoggedIn ? (
+              <div className="mobile-profile-card">
+                <div className="user-avatar-placeholder" style={{ width: "36px", height: "36px", fontSize: "13px", lineHeight: "36px", background: "var(--primary)", color: "#fff", borderRadius: "50%", textAlign: "center", fontWeight: 700, flexShrink: 0 }}>
+                  {initials}
+                </div>
+                <div className="mobile-profile-info">
+                  <strong style={{ fontSize: "14px", color: "var(--white)" }}>{displayLabel}</strong>
+                  <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.7)", display: "block" }}>{auth.name || "Authenticated User"}</span>
+                </div>
+              </div>
+            ) : (
+              <button 
+                className="btn btn-primary btn-sm mobile-signin-btn"
+                onClick={() => { setIsLoginModalOpen(true); setIsMobileNavOpen(false); }}
+                style={{ width: "100%", justifyContent: "center", padding: "9px", fontSize: "13px" }}
+              >
+                <i className="fas fa-user-circle"></i> Sign In to Account
+              </button>
+            )}
+          </div>
+
+          <Link to="/" className={location.pathname === '/' ? 'active' : ''} onClick={() => setIsMobileNavOpen(false)}>
+            <i className="fas fa-store" style={{ width: "20px", marginRight: "8px" }}></i> Medicine Store
+          </Link>
+          <Link to="/consultation" className={location.pathname === '/consultation' ? 'active' : ''} onClick={() => setIsMobileNavOpen(false)}>
+            <i className="fas fa-user-md" style={{ width: "20px", marginRight: "8px" }}></i> E-consultation
+          </Link>
+
+          {auth.isLoggedIn && (
+            <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''} onClick={() => setIsMobileNavOpen(false)}>
+              <i className="fas fa-tachometer-alt" style={{ width: "20px", marginRight: "8px" }}></i> User Portal
+            </Link>
+          )}
+
+          <div 
+            className="mobile-nav-item-link" 
+            onClick={() => { alert("Notifications: 1 new order status update."); setIsMobileNavOpen(false); }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", cursor: "pointer" }}
+          >
+            <span><i className="far fa-bell" style={{ width: "20px", marginRight: "8px" }}></i> Notifications</span>
+            <span className="badge" style={{ position: "static", transform: "none" }}>1</span>
+          </div>
+
+          {auth.isLoggedIn && (
+            <button 
+              className="mobile-nav-logout-btn"
+              onClick={() => { logoutUser(); setIsMobileNavOpen(false); }}
+            >
+              <i className="fas fa-sign-out-alt" style={{ width: "20px", marginRight: "8px" }}></i> Log Out
+            </button>
+          )}
         </nav>
 
         {/* OMNIPRESENT GLOBAL SEARCH BAR */}
