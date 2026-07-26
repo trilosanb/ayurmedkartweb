@@ -214,7 +214,7 @@ export const CartPage = () => {
                 {/* Items List */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
                   {cart.map(item => (
-                    <div key={item.product.id} style={{ display: "flex", alignItems: "center", gap: "14px", padding: "12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", backgroundColor: "#f8faf9" }}>
+                    <div key={item.product.id} className="cart-checklist-item" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", backgroundColor: "#f8faf9" }}>
                       <i className="fas fa-check-square" style={{ color: "var(--primary)", fontSize: "18px" }}></i>
                       <img src={item.product.image} alt={item.product.name} style={{ width: "48px", height: "48px", objectFit: "cover", borderRadius: "6px" }} />
                       
@@ -344,7 +344,7 @@ export const CartPage = () => {
                   </h3>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px", marginBottom: "20px" }}>
+                <div className="payment-methods-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px", marginBottom: "20px" }}>
                   {[
                     { id: "upi", label: "UPI / QR Code", icon: "fa-qrcode" },
                     { id: "card", label: "Credit/Debit Card", icon: "fa-credit-card" },

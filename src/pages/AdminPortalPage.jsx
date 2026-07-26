@@ -273,26 +273,26 @@ export const AdminPortalPage = () => {
       <div className="container" style={{ paddingTop: "32px", paddingBottom: "60px" }}>
         
         {/* Overview Stats Cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "32px" }}>
-          <div style={{ background: "var(--white)", padding: "20px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
+        <div className="admin-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "32px" }}>
+          <div className="admin-stat-card" style={{ background: "var(--white)", padding: "20px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
             <span style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase" }}>Total Gross Revenue</span>
             <h3 style={{ fontSize: "26px", color: "var(--primary)", margin: "6px 0 0 0" }}>₹{totalRevenue.toLocaleString()}</h3>
             <span style={{ fontSize: "11.5px", color: "#2b8a3e", fontWeight: 600 }}><i className="fas fa-arrow-up"></i> +14.2% this month</span>
           </div>
 
-          <div style={{ background: "var(--white)", padding: "20px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
+          <div className="admin-stat-card" style={{ background: "var(--white)", padding: "20px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
             <span style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase" }}>Total Orders Booked</span>
             <h3 style={{ fontSize: "26px", color: "var(--primary)", margin: "6px 0 0 0" }}>142 Orders</h3>
             <span style={{ fontSize: "11.5px", color: "var(--text-dark)" }}>3 Pending Fulfillment</span>
           </div>
 
-          <div style={{ background: "var(--white)", padding: "20px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
+          <div className="admin-stat-card" style={{ background: "var(--white)", padding: "20px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
             <span style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase" }}>Active Formulations</span>
             <h3 style={{ fontSize: "26px", color: "var(--primary)", margin: "6px 0 0 0" }}>{adminMedicines.length} Items</h3>
             <span style={{ fontSize: "11.5px", color: "var(--text-muted)" }}>100% Verified Quality</span>
           </div>
 
-          <div style={{ background: "var(--white)", padding: "20px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
+          <div className="admin-stat-card" style={{ background: "var(--white)", padding: "20px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
             <span style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase" }}>Low Stock Alerts</span>
             <h3 style={{ fontSize: "26px", color: lowStockCount > 0 ? "#d9640a" : "var(--primary)", margin: "6px 0 0 0" }}>{lowStockCount} Items</h3>
             <span style={{ fontSize: "11.5px", color: lowStockCount > 0 ? "#d9640a" : "var(--text-muted)" }}>Requires Restock</span>
@@ -300,7 +300,7 @@ export const AdminPortalPage = () => {
         </div>
 
         {/* Admin Navigation Tabs */}
-        <div style={{ display: "flex", gap: "12px", marginBottom: "24px", borderBottom: "2px solid var(--border-color)", paddingBottom: "12px" }}>
+        <div className="admin-nav-tabs" style={{ display: "flex", gap: "12px", marginBottom: "24px", borderBottom: "2px solid var(--border-color)", paddingBottom: "12px" }}>
           {[
             { id: "medicine", label: "Medicine Management & Catalog", icon: "fa-pills" },
             { id: "inventory", label: "Inventory & Stock Control", icon: "fa-boxes" },
@@ -309,6 +309,7 @@ export const AdminPortalPage = () => {
           ].map(tab => (
             <button 
               key={tab.id}
+              className="admin-nav-tab-btn"
               onClick={() => setActiveAdminTab(tab.id)}
               style={{
                 padding: "10px 20px", borderRadius: "var(--radius-sm)", border: "none", cursor: "pointer",
@@ -326,18 +327,18 @@ export const AdminPortalPage = () => {
         {/* TAB 1: MEDICINE MANAGEMENT & CATALOG */}
         {activeAdminTab === "medicine" && (
           <div style={{ background: "var(--white)", padding: "24px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+            <div className="admin-section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
               <div>
                 <h3 style={{ margin: 0, color: "var(--primary)" }}>Medicine Catalog & Formulations</h3>
                 <p style={{ margin: "4px 0 0 0", fontSize: "13px", color: "var(--text-muted)" }}>Manage active Ayurvedic medicines, MRP, discounted selling price, and prescription requirements.</p>
               </div>
-              <button className="btn btn-primary" onClick={() => setIsAddMedModalOpen(true)}>
+              <button className="btn btn-primary admin-add-btn" onClick={() => setIsAddMedModalOpen(true)}>
                 <i className="fas fa-plus" style={{ marginRight: "6px" }}></i> Add New Formulation
               </button>
             </div>
 
             {/* TAB 1 FILTER BAR */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
+            <div className="admin-filter-bar" style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
               <div style={{ position: "relative", flex: 1, minWidth: "220px" }}>
                 <i className="fas fa-search" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontSize: "12px" }}></i>
                 <input 
@@ -389,7 +390,7 @@ export const AdminPortalPage = () => {
               )}
             </div>
 
-            <div style={{ overflowX: "auto" }}>
+            <div className="admin-table-wrapper" style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
                 <thead>
                   <tr style={{ borderBottom: "2px solid var(--border-color)", backgroundColor: "#f8faf9" }}>
@@ -466,7 +467,7 @@ export const AdminPortalPage = () => {
             <p style={{ margin: "0 0 20px 0", fontSize: "13px", color: "var(--text-muted)" }}>Monitor stock levels and adjust quantity for all active formulations.</p>
 
             {/* TAB 2 FILTER BAR */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
+            <div className="admin-filter-bar" style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
               <div style={{ position: "relative", flex: 1, minWidth: "220px" }}>
                 <i className="fas fa-search" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontSize: "12px" }}></i>
                 <input 
@@ -551,7 +552,7 @@ export const AdminPortalPage = () => {
             <p style={{ margin: "0 0 20px 0", fontSize: "13px", color: "var(--text-muted)" }}>Track customer purchases and update shipping fulfillment status.</p>
 
             {/* TAB 3 FILTER BAR (DATE & STATUS FILTERS) */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
+            <div className="admin-filter-bar" style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
               <div style={{ position: "relative", flex: 1, minWidth: "200px" }}>
                 <i className="fas fa-search" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontSize: "12px" }}></i>
                 <input 
@@ -654,7 +655,7 @@ export const AdminPortalPage = () => {
             <p style={{ margin: "0 0 20px 0", fontSize: "13px", color: "var(--text-muted)" }}>View doctor appointment schedules and patient clinical records.</p>
 
             {/* TAB 4 FILTER BAR (DATE & DOCTOR FILTERS) */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
+            <div className="admin-filter-bar" style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
               {/* Date-wise Filter */}
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)" }}><i className="far fa-calendar-alt"></i> Consultation Date:</label>

@@ -4990,46 +4990,88 @@ header .header-container {
   }
 
   /* ----------------------------------------
-     ADMIN PORTAL
+     ADMIN PORTAL — Mobile Overhaul
   ---------------------------------------- */
   .admin-stats-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
+    gap: 10px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .admin-stat-card {
+    padding: 12px 10px !important;
+    border-radius: 10px !important;
+  }
+
+  .admin-stat-card span {
+    font-size: 9.5px !important;
+  }
+
+  .admin-stat-card h3 {
+    font-size: 18px !important;
+    margin: 4px 0 0 0 !important;
   }
 
   .admin-nav-tabs {
+    display: flex !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
     flex-wrap: nowrap !important;
-    gap: 4px !important;
-    padding-bottom: 4px !important;
+    gap: 6px !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 16px !important;
   }
 
   .admin-nav-tab-btn {
     white-space: nowrap !important;
-    padding: 7px 10px !important;
-    font-size: 11px !important;
+    padding: 8px 14px !important;
+    font-size: 11.5px !important;
     flex-shrink: 0 !important;
+    border-radius: 16px !important;
+  }
+
+  .admin-section-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .admin-add-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 10px !important;
+    font-size: 12.5px !important;
   }
 
   .admin-filter-bar {
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 6px !important;
+    gap: 8px !important;
+    padding: 10px 12px !important;
+  }
+
+  .admin-filter-bar > div,
+  .admin-filter-bar select,
+  .admin-filter-bar input {
+    width: 100% !important;
+    font-size: 11.5px !important;
   }
 
   .admin-table-wrapper {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    border-radius: 8px !important;
   }
 
-  table {
-    min-width: 540px !important;
+  .admin-table-wrapper table {
+    min-width: 580px !important;
     font-size: 11px !important;
   }
 
-  th, td {
-    padding: 6px 8px !important;
+  .admin-table-wrapper th,
+  .admin-table-wrapper td {
+    padding: 8px 10px !important;
     font-size: 11px !important;
   }
 
@@ -5049,17 +5091,14 @@ header .header-container {
   }
 
   /* ----------------------------------------
-     CART / CHECKOUT PAGE — Mobile
+     CART / CHECKOUT PAGE — Mobile Overhaul
   ---------------------------------------- */
-
-  /* Stack main content + sidebar vertically */
   .cart-checkout-grid {
     display: flex !important;
     flex-direction: column !important;
     gap: 16px !important;
   }
 
-  /* Stepper bar: scrollable horizontal row */
   .checkout-stepper-bar {
     display: flex !important;
     flex-wrap: nowrap !important;
@@ -5076,9 +5115,24 @@ header .header-container {
     padding: 7px 12px !important;
     font-size: 11px !important;
     flex-shrink: 0 !important;
+    border-radius: 16px !important;
   }
 
-  /* Address form rows → single column on mobile */
+  .cart-checklist-item {
+    padding: 10px !important;
+    gap: 10px !important;
+  }
+
+  .cart-checklist-item img {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .payment-methods-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
   .address-form-row-2,
   .address-form-row-3 {
     grid-template-columns: 1fr !important;
@@ -5087,9 +5141,10 @@ header .header-container {
     margin-bottom: 10px !important;
   }
 
-  /* Order Summary sidebar stays full-width, unsticky */
   .cart-checkout-grid > div:last-child > div {
     position: static !important;
+    padding: 16px !important;
+    border-radius: 12px !important;
   }
 }
 
