@@ -263,10 +263,29 @@ const STATE = {
     category: [],
     condition: [],
     formulation: [],
+    brand: [], // Added brand filtering
     minPrice: 0,
     maxPrice: 1000,
     prescription: "all"
-  }
+  },
+  auth: {
+    isLoggedIn: false,
+    username: null,
+    role: null, // "patient" or "admin"
+    name: null,
+    redirectAfterLogin: null
+  },
+  consultations: [
+    {
+      id: "CON-789",
+      doctorId: 1,
+      doctorName: "Dr. Aravind Sharma",
+      date: "2026-07-28",
+      time: "10:00 AM",
+      notes: "Routine follow-up for joint pain.",
+      status: "Scheduled"
+    }
+  ]
 };
 
 // Initialization
@@ -278,6 +297,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initModals();
   initDashboardEvents();
   initAdminEvents();
+  initHeroSlider(); // Initialize Hero slider
+  initAuthEvents(); // Initialize authentication listeners
+  initConsultationEvents(); // Initialize consultation handlers
   renderProducts();
   renderDashboard();
   renderAdmin();
@@ -321,59 +343,132 @@ function initHeaderScroll() {
   });
 }
 
-// Custom SPA Routing
-function initRouter() {
-  const links = document.querySelectorAll("[data-target]");
-  links.forEach(link => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const target = link.getAttribute("data-target");
-      navigate(target);
-    });
-  });
+// LocalStorage Persistence Keys
+const STORAGE_KEY_CART = "ayurmedkart_cart";
+const STORAGE_KEY_AUTH = "ayurmedkart_auth";
+const STORAGE_KEY_ORDERS = "ayurmedkart_orders";
+const STORAGE_KEY_CONSULTATIONS = "ayurmedkart_consultations";
+const STORAGE_KEY_PRESCRIPTIONS = "ayurmedkart_prescriptions";
 
-  // Handle CTA buttons routing
-  document.addEventListener("click", (e) => {
-    if (e.target.matches(".btn-shop-medicines")) {
-      navigate("shop");
-    }
-    if (e.target.matches(".btn-upload-pres")) {
-      openModal("prescription-upload-modal");
-    }
-  });
+function saveStateToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY_CART, JSON.stringify(STATE.cart));
+    localStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(STATE.auth));
+    localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(STATE.orders));
+    localStorage.setItem(STORAGE_KEY_CONSULTATIONS, JSON.stringify(STATE.consultations));
+    localStorage.setItem(STORAGE_KEY_PRESCRIPTIONS, JSON.stringify(STATE.uploadedPrescriptions));
+  } catch (err) {
+    console.error("Error saving state to localStorage:", err);
+  }
 }
 
-function navigate(viewName) {
-  STATE.currentView = viewName;
+function loadStateFromStorage() {
+  try {
+    const savedCart = localStorage.getItem(STORAGE_KEY_CART);
+    if (savedCart) STATE.cart = JSON.parse(savedCart);
 
-  // Toggle active class on links
-  document.querySelectorAll("[data-target]").forEach(link => {
-    if (link.getAttribute("data-target") === viewName) {
+    const savedAuth = localStorage.getItem(STORAGE_KEY_AUTH);
+    if (savedAuth) STATE.auth = JSON.parse(savedAuth);
+
+    const savedOrders = localStorage.getItem(STORAGE_KEY_ORDERS);
+    if (savedOrders) STATE.orders = JSON.parse(savedOrders);
+
+    const savedConsultations = localStorage.getItem(STORAGE_KEY_CONSULTATIONS);
+    if (savedConsultations) STATE.consultations = JSON.parse(savedConsultations);
+
+    const savedPrescriptions = localStorage.getItem(STORAGE_KEY_PRESCRIPTIONS);
+    if (savedPrescriptions) STATE.uploadedPrescriptions = JSON.parse(savedPrescriptions);
+  } catch (err) {
+    console.error("Error loading state from localStorage:", err);
+  }
+}
+
+function getCurrentPageName() {
+  const path = window.location.pathname.toLowerCase();
+  if (path.endsWith("consultation.html")) return "consultation";
+  if (path.endsWith("dashboard.html")) return "dashboard";
+  return "shop";
+}
+
+// Multi-Page Routing & Navigation
+function initRouter() {
+  loadStateFromStorage();
+
+  const currentPage = getCurrentPageName();
+  STATE.currentView = currentPage;
+
+  // Highlight active navbar link
+  document.querySelectorAll("nav a").forEach(link => {
+    const href = link.getAttribute("href") || "";
+    const target = link.getAttribute("data-target");
+    
+    if ((currentPage === "shop" && (href.includes("index.html") || target === "shop")) ||
+        (currentPage === "consultation" && (href.includes("consultation.html") || target === "consultation")) ||
+        (currentPage === "dashboard" && (href.includes("dashboard.html") || target === "dashboard"))) {
       link.classList.add("active");
     } else {
       link.classList.remove("active");
     }
   });
 
-  // Toggle active class on view sections
-  document.querySelectorAll(".view-section").forEach(section => {
-    if (section.id === viewName) {
-      section.style.display = "block";
-      setTimeout(() => {
-        section.classList.add("active");
-      }, 50);
-    } else {
-      section.classList.remove("active");
-      section.style.display = "none";
+  // Handle nav link clicks
+  document.querySelectorAll("[data-target]").forEach(link => {
+    link.addEventListener("click", (e) => {
+      const target = link.getAttribute("data-target");
+      if (target) {
+        e.preventDefault();
+        navigate(target);
+      }
+    });
+  });
+
+  // Handle CTA buttons routing
+  document.addEventListener("click", (e) => {
+    if (e.target.matches(".btn-shop-medicines")) {
+      e.preventDefault();
+      navigate("shop");
+    }
+    if (e.target.matches(".btn-upload-pres")) {
+      e.preventDefault();
+      openModal("prescription-upload-modal");
     }
   });
 
-  window.scrollTo(0, 0);
+  // Gating check on dashboard page load
+  if (currentPage === "dashboard" && !STATE.auth.isLoggedIn) {
+    STATE.auth.redirectAfterLogin = "dashboard.html";
+    saveStateToStorage();
+    setTimeout(() => {
+      openModal("login-modal");
+    }, 150);
+  }
+}
 
-  if (viewName === "dashboard") {
-    renderDashboard();
-  } else if (viewName === "admin") {
-    renderAdmin();
+function navigate(viewName) {
+  const pageMap = {
+    shop: "index.html",
+    consultation: "consultation.html",
+    dashboard: "dashboard.html"
+  };
+
+  const targetPage = pageMap[viewName] || "index.html";
+  const currentPage = getCurrentPageName();
+
+  // Gating check for User Portal
+  if (viewName === "dashboard" && !STATE.auth.isLoggedIn) {
+    STATE.auth.redirectAfterLogin = "dashboard.html";
+    saveStateToStorage();
+    openModal("login-modal");
+    return;
+  }
+
+  saveStateToStorage();
+
+  const currentHtmlName = currentPage === "shop" ? "index.html" : `${currentPage}.html`;
+  if (targetPage !== currentHtmlName) {
+    window.location.href = targetPage;
+  } else {
+    window.scrollTo(0, 0);
   }
 }
 
@@ -454,6 +549,7 @@ function initShopFilters() {
         category: [],
         condition: [],
         formulation: [],
+        brand: [], // Clear brand filters
         minPrice: 0,
         maxPrice: 1000,
         prescription: "all"
@@ -515,92 +611,95 @@ function renderProducts() {
   const container = document.getElementById("products-container");
   if (!container) return;
 
-  container.innerHTML = Array(4).fill(0).map(() => `
-    <div class="skeleton-card">
-      <div class="skeleton skeleton-img"></div>
-      <div class="skeleton skeleton-text"></div>
-      <div class="skeleton skeleton-text short"></div>
-    </div>
-  `).join("");
+  let filtered = MEDICINES.filter(med => {
+    if (STATE.searchQuery && !med.name.toLowerCase().includes(STATE.searchQuery.toLowerCase()) && !med.manufacturer.toLowerCase().includes(STATE.searchQuery.toLowerCase())) {
+      return false;
+    }
+    if (STATE.filters.category.length > 0 && !STATE.filters.category.includes(med.category)) {
+      return false;
+    }
+    if (STATE.filters.condition.length > 0 && !STATE.filters.condition.includes(med.condition)) {
+      return false;
+    }
+    if (STATE.filters.formulation.length > 0 && !STATE.filters.formulation.includes(med.formulation)) {
+      return false;
+    }
+    if (STATE.filters.brand.length > 0 && !STATE.filters.brand.includes(med.manufacturer)) {
+      return false;
+    }
+    if (med.price < STATE.filters.minPrice || med.price > STATE.filters.maxPrice) {
+      return false;
+    }
+    return true;
+  });
 
-  setTimeout(() => {
-    let filtered = MEDICINES.filter(med => {
-      if (STATE.searchQuery && !med.name.toLowerCase().includes(STATE.searchQuery.toLowerCase()) && !med.manufacturer.toLowerCase().includes(STATE.searchQuery.toLowerCase())) {
-        return false;
-      }
-      if (STATE.filters.category.length > 0 && !STATE.filters.category.includes(med.category)) {
-        return false;
-      }
-      if (STATE.filters.condition.length > 0 && !STATE.filters.condition.includes(med.condition)) {
-        return false;
-      }
-      if (STATE.filters.formulation.length > 0 && !STATE.filters.formulation.includes(med.formulation)) {
-        return false;
-      }
-      if (med.price < STATE.filters.minPrice || med.price > STATE.filters.maxPrice) {
-        return false;
-      }
-      return true;
-    });
+  const sortVal = document.getElementById("sort-products")?.value;
+  if (sortVal === "low-high") {
+    filtered.sort((a, b) => a.price - b.price);
+  } else if (sortVal === "high-low") {
+    filtered.sort((a, b) => b.price - a.price);
+  } else if (sortVal === "rating") {
+    filtered.sort((a, b) => b.rating - a.rating);
+  }
 
-    const sortVal = document.getElementById("sort-products")?.value;
-    if (sortVal === "low-high") {
-      filtered.sort((a, b) => a.price - b.price);
-    } else if (sortVal === "high-low") {
-      filtered.sort((a, b) => b.price - a.price);
-    } else if (sortVal === "rating") {
-      filtered.sort((a, b) => b.rating - a.rating);
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+        <i class="fas fa-search" style="font-size: 40px; margin-bottom: 12px; color: var(--border-color);"></i>
+        <p>No products found matching the criteria. Try clearing filters.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(med => {
+    const isRx = med.prescriptionRequired;
+    const starsArr = [];
+    const roundedRating = Math.round(med.rating);
+    for (let i = 1; i <= 5; i++) {
+      starsArr.push(i <= roundedRating ? `<i class="fas fa-star"></i>` : `<i class="far fa-star"></i>`);
     }
 
-    if (filtered.length === 0) {
-      container.innerHTML = `
-        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
-          <i class="fas fa-search" style="font-size: 40px; margin-bottom: 12px; color: var(--border-color);"></i>
-          <p>No products found matching the criteria. Try clearing filters.</p>
+    return `
+      <div class="product-card" data-id="${med.id}">
+        <div class="product-badge">-${med.discount}%</div>
+        <div class="prescription-badge ${isRx ? '' : 'otc'}">
+          <i class="fas ${isRx ? 'fa-prescription-bottle-alt' : 'fa-check-circle'}"></i>
+          ${isRx ? 'Rx Required' : 'OTC'}
         </div>
-      `;
-      return;
+        <div class="product-img-box">
+          <img src="${med.image}" alt="${med.name}">
+        </div>
+        <div class="product-body">
+          <div class="product-mfg">${med.manufacturer}</div>
+          <h4 class="product-title" onclick="openProductDetails(${med.id})">${med.name}</h4>
+          <div class="product-rating">
+            <span class="stars">${starsArr.join("")}</span>
+            <span class="rating-count">(${med.reviewsCount})</span>
+          </div>
+          <div class="product-pricing">
+            <span class="current-price">₹${med.price}</span>
+            <span class="original-price">₹${med.originalPrice}</span>
+          </div>
+          <div class="product-actions">
+            <button class="btn btn-primary btn-sm" onclick="addToCart(${med.id})">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // Sync Brand Cards active state
+  document.querySelectorAll(".brand-card").forEach(bc => {
+    const brandVal = bc.getAttribute("data-brand");
+    if (STATE.filters.brand.includes(brandVal)) {
+      bc.classList.add("active");
+    } else {
+      bc.classList.remove("active");
     }
-
-    container.innerHTML = filtered.map(med => {
-      const isRx = med.prescriptionRequired;
-      const starsArr = [];
-      const roundedRating = Math.round(med.rating);
-      for (let i = 1; i <= 5; i++) {
-        starsArr.push(i <= roundedRating ? `<i class="fas fa-star"></i>` : `<i class="far fa-star"></i>`);
-      }
-
-      return `
-        <div class="product-card" data-id="${med.id}">
-          <div class="product-badge">-${med.discount}%</div>
-          <div class="prescription-badge ${isRx ? '' : 'otc'}">
-            <i class="fas ${isRx ? 'fa-prescription-bottle-alt' : 'fa-check-circle'}"></i>
-            ${isRx ? 'Rx Required' : 'OTC'}
-          </div>
-          <div class="product-img-box">
-            <img src="${med.image}" alt="${med.name}">
-          </div>
-          <div class="product-body">
-            <div class="product-mfg">${med.manufacturer}</div>
-            <h4 class="product-title" onclick="openProductDetails(${med.id})">${med.name}</h4>
-            <div class="product-rating">
-              <span class="stars">${starsArr.join("")}</span>
-              <span class="rating-count">(${med.reviewsCount})</span>
-            </div>
-            <div class="product-pricing">
-              <span class="current-price">₹${med.price}</span>
-              <span class="original-price">₹${med.originalPrice}</span>
-            </div>
-            <div class="product-actions">
-              <button class="btn btn-primary btn-sm" onclick="addToCart(${med.id})">
-                <i class="fas fa-shopping-cart"></i> Add to Cart
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join("");
-  }, 250);
+  });
 }
 
 // PRODUCT DETAILS MODAL
@@ -708,6 +807,7 @@ function addToCart(id) {
     STATE.cart.push({ product: med, qty: 1 });
   }
 
+  saveStateToStorage();
   updateCartUI();
   openCartSidebar();
 }
@@ -721,11 +821,13 @@ function updateCartQty(id, delta) {
     STATE.cart = STATE.cart.filter(c => c.product.id !== id);
   }
 
+  saveStateToStorage();
   updateCartUI();
 }
 
 function deleteCartItem(id) {
   STATE.cart = STATE.cart.filter(c => c.product.id !== id);
+  saveStateToStorage();
   updateCartUI();
 }
 
@@ -826,6 +928,13 @@ function initCartListeners() {
   const checkoutBtn = document.getElementById("checkout-btn");
   if (checkoutBtn) {
     checkoutBtn.addEventListener("click", () => {
+      if (!STATE.auth.isLoggedIn) {
+        closeCartSidebar();
+        alert("Please Sign In first to complete your purchase.");
+        openModal("login-modal");
+        return;
+      }
+
       // Validate prescription requirement
       const rxRequiredItems = STATE.cart.filter(item => item.product.prescriptionRequired);
 
@@ -886,6 +995,15 @@ function processCheckoutOrder() {
   };
 
   STATE.orders.unshift(newOrder);
+
+  // Synchronize new order to the mock database for the logged-in user
+  const activeIdentifier = STATE.auth.identifier;
+  if (activeIdentifier && MOCK_ACCOUNTS[activeIdentifier.toLowerCase()]) {
+    const exists = MOCK_ACCOUNTS[activeIdentifier.toLowerCase()].orders.some(o => o.id === orderId);
+    if (!exists) {
+      MOCK_ACCOUNTS[activeIdentifier.toLowerCase()].orders.unshift(newOrder);
+    }
+  }
 
   // Clear Cart
   STATE.cart = [];
@@ -1198,6 +1316,35 @@ function renderAdmin() {
       `;
     }).join("");
   }
+
+  // 4. Telehealth Consultations list
+  const consultationsContainer = document.getElementById("dashboard-consultations-list");
+  if (consultationsContainer) {
+    if (STATE.consultations.length === 0) {
+      consultationsContainer.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 20px;">No telehealth consults scheduled yet.</p>`;
+    } else {
+      consultationsContainer.innerHTML = STATE.consultations.map(c => {
+        const isScheduled = c.status === "Scheduled";
+        return `
+          <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background-color: var(--white); box-shadow: var(--shadow-sm);">
+            <div>
+              <h5 style="margin: 0; color: var(--primary); font-size: 14px; font-weight: 600;">${c.doctorName}</h5>
+              <p style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0 0;">
+                <i class="far fa-calendar-alt"></i> ${c.date} | <i class="far fa-clock"></i> ${c.time}
+              </p>
+              ${c.notes ? `<p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 0 0; font-style: italic;">Concern: "${c.notes}"</p>` : ''}
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="status-indicator approved">${c.status}</span>
+              ${isScheduled ? `<button class="btn btn-primary btn-sm btn-join-video-call" data-id="${c.id}" data-doc="${c.doctorName}">
+                <i class="fas fa-video"></i> Join Call
+              </button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+  }
 }
 
 function approvePrescriptionAdmin(id) {
@@ -1264,3 +1411,615 @@ function closeAllModals() {
   });
   document.body.style.overflow = "auto";
 }
+
+// Hero Banner Slider
+function initHeroSlider() {
+  const slides = document.querySelectorAll(".hero-slide");
+  const dots = document.querySelectorAll(".slider-dot");
+  const prevBtn = document.querySelector(".slider-prev-btn");
+  const nextBtn = document.querySelector(".slider-next-btn");
+  if (slides.length === 0) return;
+
+  let currentSlide = 0;
+  let slideInterval;
+
+  function showSlide(index) {
+    slides.forEach(slide => slide.classList.remove("active"));
+    dots.forEach(dot => dot.classList.remove("active"));
+    
+    currentSlide = (index + slides.length) % slides.length;
+    slides[currentSlide].classList.add("active");
+    if (dots[currentSlide]) dots[currentSlide].classList.add("active");
+  }
+
+  function nextSlide() {
+    showSlide(currentSlide + 1);
+  }
+
+  function prevSlide() {
+    showSlide(currentSlide - 1);
+  }
+
+  function startAutoPlay() {
+    stopAutoPlay();
+    slideInterval = setInterval(nextSlide, 5000);
+  }
+
+  function stopAutoPlay() {
+    if (slideInterval) clearInterval(slideInterval);
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      nextSlide();
+      startAutoPlay();
+    });
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener("click", () => {
+      prevSlide();
+      startAutoPlay();
+    });
+  }
+
+  dots.forEach((dot, index) => {
+    dot.addEventListener("click", () => {
+      showSlide(index);
+      startAutoPlay();
+    });
+  });
+
+  // Start
+  showSlide(0);
+  startAutoPlay();
+
+  // Pause on hover
+  const sliderContainer = document.querySelector(".hero-slider-container");
+  if (sliderContainer) {
+    sliderContainer.addEventListener("mouseenter", stopAutoPlay);
+    sliderContainer.addEventListener("mouseleave", startAutoPlay);
+  }
+}
+
+// Brand card click listener
+document.addEventListener("click", (e) => {
+  const brandCard = e.target.closest(".brand-card");
+  if (brandCard) {
+    const selectedBrand = brandCard.getAttribute("data-brand");
+    
+    document.querySelectorAll(".brand-card").forEach(bc => bc.classList.remove("active"));
+    
+    if (STATE.filters.brand.includes(selectedBrand)) {
+      STATE.filters.brand = [];
+      document.querySelectorAll(".store-sidebar input[data-filter='brand']").forEach(chk => {
+        chk.checked = false;
+      });
+    } else {
+      STATE.filters.brand = [selectedBrand];
+      brandCard.classList.add("active");
+      document.querySelectorAll(".store-sidebar input[data-filter='brand']").forEach(chk => {
+        chk.checked = (chk.value === selectedBrand);
+      });
+    }
+    
+    renderProducts();
+  }
+});
+
+// AUTHENTICATION LOGIC & PORTAL
+// ADVANCED E-COMMERCE MOCK ACCOUNTS
+const MOCK_ACCOUNTS = {
+  "rahul.kumar@gmail.com": {
+    name: "Rahul Kumar",
+    role: "patient",
+    avatar: "RK",
+    identifier: "rahul.kumar@gmail.com",
+    orders: [
+      {
+        id: "ORD-9901",
+        date: "2026-06-25",
+        items: [
+          { name: "Ashwagandha Capsules", qty: 2, price: 250 },
+          { name: "Chyawanprash Special", qty: 1, price: 320 }
+        ],
+        subtotal: 820,
+        tax: 41,
+        total: 861,
+        status: "Shipped",
+        stepIndex: 3
+      }
+    ],
+    uploadedPrescriptions: [
+      {
+        id: "UPL-981",
+        fileName: "prescription_june2026.jpg",
+        uploadDate: "2026-06-28",
+        status: "Approved",
+        reviewedBy: "Medical Board"
+      }
+    ],
+    ehr: [
+      { id: "EHR-101", fileName: "BloodReport_June2026.pdf", date: "2026-06-10", size: "1.2 MB" },
+      { id: "EHR-102", fileName: "ThyroidPanel_May2026.pdf", date: "2026-05-02", size: "850 KB" }
+    ],
+    consultations: [
+      {
+        id: "CON-789",
+        doctorId: 1,
+        doctorName: "Dr. Aravind Sharma",
+        date: "2026-07-28",
+        time: "10:00 AM",
+        notes: "Routine follow-up for joint pain.",
+        status: "Scheduled"
+      }
+    ]
+  },
+  "9876543210": null
+};
+MOCK_ACCOUNTS["9876543210"] = MOCK_ACCOUNTS["rahul.kumar@gmail.com"];
+
+function getOrCreateAccount(identifier) {
+  const key = identifier.trim().toLowerCase();
+  if (MOCK_ACCOUNTS[key]) {
+    return MOCK_ACCOUNTS[key];
+  }
+  
+  if (key === "rahul.kumar@gmail.com" || key === "9876543210") {
+    return MOCK_ACCOUNTS["rahul.kumar@gmail.com"];
+  }
+
+  const newAccount = {
+    name: identifier,
+    role: "patient",
+    avatar: identifier.includes("@") ? identifier.split("@")[0].substring(0, 2).toUpperCase() : identifier.substring(0, 2).toUpperCase(),
+    identifier: identifier,
+    orders: [],
+    uploadedPrescriptions: [],
+    ehr: [],
+    consultations: []
+  };
+  MOCK_ACCOUNTS[key] = newAccount;
+  return newAccount;
+}
+
+// AUTHENTICATION LOGIC & PORTAL
+function initAuthEvents() {
+  const openLoginBtn = document.getElementById("open-login-modal");
+  const loginModal = document.getElementById("login-modal");
+  const authDropdown = document.getElementById("user-auth-dropdown");
+  const dropdownGotoDash = document.getElementById("dropdown-goto-dash");
+  const dropdownGotoAdmin = document.getElementById("dropdown-goto-admin");
+  const logoutBtn = document.getElementById("auth-logout-btn");
+
+  // Google Login buttons & modals
+  const googleChooserModal = document.getElementById("google-chooser-modal");
+  const googleAuthTrigger = document.getElementById("btn-google-auth-trigger");
+  const cancelGoogleBtn = document.getElementById("btn-cancel-google-chooser");
+  const googleAccRahul = document.getElementById("google-acc-rahul");
+  const googleAccGuest = document.getElementById("google-acc-guest");
+
+  const standardLoginForm = document.getElementById("patient-standard-login-form");
+
+  // Handle Standard Login Form Submission
+  if (standardLoginForm) {
+    standardLoginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const identifier = document.getElementById("patient-auth-identifier").value.trim();
+      if (!identifier) return;
+
+      const account = getOrCreateAccount(identifier);
+      closeAllModals();
+      alert(`Signed in successfully as: ${account.name}`);
+      loginUser(account);
+    });
+  }
+
+  // Trigger Google Account Chooser
+  if (googleAuthTrigger) {
+    googleAuthTrigger.addEventListener("click", () => {
+      googleChooserModal.classList.add("active");
+    });
+  }
+
+  if (cancelGoogleBtn) {
+    cancelGoogleBtn.addEventListener("click", () => {
+      googleChooserModal.classList.remove("active");
+    });
+  }
+
+  // Choose Rahul Kumar in Google Chooser
+  if (googleAccRahul) {
+    googleAccRahul.addEventListener("click", () => {
+      const account = getOrCreateAccount("rahul.kumar@gmail.com");
+      googleChooserModal.classList.remove("active");
+      closeAllModals();
+      alert("Successfully logged in via Google: Rahul Kumar");
+      loginUser(account);
+    });
+  }
+
+  // Choose New/Guest User in Google Chooser
+  if (googleAccGuest) {
+    googleAccGuest.addEventListener("click", () => {
+      const account = getOrCreateAccount("guest.user@gmail.com");
+      googleChooserModal.classList.remove("active");
+      closeAllModals();
+      alert("Successfully logged in via Google: New User");
+      loginUser(account);
+    });
+  }
+
+  // Universal Sign In click listener using event delegation
+  document.addEventListener("click", (e) => {
+    const loginTrigger = e.target.closest("#open-login-modal, .login-icon-btn, .btn-open-login, [data-action='login']");
+    if (loginTrigger) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!STATE.auth.isLoggedIn) {
+        openModal("login-modal");
+      } else {
+        if (authDropdown) authDropdown.classList.toggle("active");
+      }
+    } else if (authDropdown && !authDropdown.contains(e.target)) {
+      authDropdown.classList.remove("active");
+    }
+  });
+
+  // Dropdown options redirects
+  if (dropdownGotoDash) {
+    dropdownGotoDash.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (authDropdown) authDropdown.classList.remove("active");
+      navigate("dashboard");
+    });
+  }
+
+  if (dropdownGotoAdmin) {
+    dropdownGotoAdmin.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (authDropdown) authDropdown.classList.remove("active");
+      navigate("admin");
+    });
+  }
+
+  // Logout
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      logoutUser();
+      if (authDropdown) authDropdown.classList.remove("active");
+      alert("Logged out successfully.");
+      navigate("shop");
+    });
+  }
+}
+
+function loginUser(accountObj) {
+  STATE.auth.isLoggedIn = true;
+  STATE.auth.username = accountObj.name;
+  STATE.auth.role = accountObj.role;
+  STATE.auth.name = accountObj.name;
+  STATE.auth.identifier = accountObj.identifier;
+
+  STATE.orders = accountObj.orders;
+  STATE.uploadedPrescriptions = accountObj.uploadedPrescriptions;
+  STATE.ehr = accountObj.ehr;
+  STATE.consultations = accountObj.consultations;
+
+  saveStateToStorage();
+  updateAuthUI();
+  renderDashboard();
+
+  // If redirect target is stored, navigate there automatically
+  if (STATE.auth.redirectAfterLogin) {
+    const target = STATE.auth.redirectAfterLogin;
+    STATE.auth.redirectAfterLogin = null;
+    saveStateToStorage();
+    if (target.includes("dashboard")) {
+      window.location.href = "dashboard.html";
+    } else {
+      window.location.href = target;
+    }
+  }
+}
+
+function logoutUser() {
+  STATE.auth.isLoggedIn = false;
+  STATE.auth.username = null;
+  STATE.auth.role = null;
+  STATE.auth.name = null;
+  STATE.auth.identifier = null;
+
+  STATE.orders = [];
+  STATE.uploadedPrescriptions = [];
+  STATE.ehr = [];
+  STATE.consultations = [];
+
+  saveStateToStorage();
+  updateAuthUI();
+  renderDashboard();
+
+  if (getCurrentPageName() === "dashboard") {
+    window.location.href = "index.html";
+  }
+}
+
+function updateAuthUI() {
+  const openLoginBtn = document.getElementById("open-login-modal");
+  const loggedUserName = document.getElementById("logged-user-name");
+  const loggedUserRole = document.getElementById("logged-user-role");
+  const dropdownGotoAdmin = document.getElementById("dropdown-goto-admin");
+
+  if (!openLoginBtn) return;
+
+  if (STATE.auth.isLoggedIn) {
+    const isRahul = STATE.auth.identifier === "rahul.kumar@gmail.com" || STATE.auth.identifier === "9876543210";
+    const initials = isRahul ? "RK" : (STATE.auth.role === "admin" ? "AD" : STATE.auth.name.substring(0, 2).toUpperCase());
+    const displayLabel = isRahul ? "Rahul K." : (STATE.auth.role === "admin" ? "Admin" : STATE.auth.name.split("@")[0]);
+
+    openLoginBtn.innerHTML = `<div class="user-avatar-placeholder" style="width:26px; height:26px; font-size:11px; margin:0; line-height:26px; border:1px solid var(--white); background:rgba(255,255,255,0.2); color:var(--white); border-radius:50%; display:inline-block; vertical-align:middle; text-align:center; font-weight:700;">${initials}</div> <span class="login-btn-text" style="vertical-align:middle; margin-left:5px; font-weight:600;">${displayLabel}</span> <i class="fas fa-caret-down" style="vertical-align:middle; margin-left:3px;"></i>`;
+    
+    if (loggedUserName) loggedUserName.textContent = STATE.auth.name;
+    if (loggedUserRole) loggedUserRole.textContent = STATE.auth.role === 'admin' ? 'Store Administrator' : 'User Vault';
+    
+    if (dropdownGotoAdmin) {
+      dropdownGotoAdmin.style.display = STATE.auth.role === 'admin' ? 'flex' : 'none';
+    }
+  } else {
+    openLoginBtn.innerHTML = `<i class="fas fa-user-circle"></i> <span class="login-btn-text">Sign In</span>`;
+  }
+}
+
+// E-CONSULTATION BOOKING & TELEHEALTH LOGIC
+let callTimerInterval;
+
+function initConsultationEvents() {
+  const docCards = document.querySelectorAll(".doctor-card");
+  const slotBtns = document.querySelectorAll(".time-slot-btn");
+  const consultForm = document.getElementById("econsultation-booking-form");
+  
+  // Date input: restrict to today onwards
+  const dateInput = document.getElementById("consult-date");
+  if (dateInput) {
+    const todayStr = new Date().toISOString().split("T")[0];
+    dateInput.setAttribute("min", todayStr);
+    dateInput.value = todayStr;
+  }
+
+  // Doctor card selection
+  docCards.forEach(card => {
+    card.addEventListener("click", () => {
+      docCards.forEach(c => c.classList.remove("active"));
+      card.classList.add("active");
+
+      const docId = card.getAttribute("data-doc-id");
+      const docName = card.getAttribute("data-doc-name");
+      const docFee = card.getAttribute("data-doc-fee");
+
+      // Update hidden inputs
+      document.getElementById("booking-doc-id").value = docId;
+      document.getElementById("booking-doc-name").value = docName;
+      document.getElementById("booking-doc-fee").value = docFee;
+
+      // Update banner display
+      const avatarText = docName.split(" ").map(w => w[0]).filter(c => c !== "D" && c !== "r" && c !== ".").join("");
+      document.getElementById("selected-doc-avatar").textContent = avatarText;
+      document.getElementById("selected-doc-name").textContent = docName;
+      document.getElementById("selected-doc-fee").textContent = `₹${docFee}`;
+    });
+  });
+
+  // Time slot selection
+  slotBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      slotBtns.forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      document.getElementById("booking-time-slot").value = btn.getAttribute("data-time");
+    });
+  });
+
+  // Handle consultation form booking submit
+  if (consultForm) {
+    consultForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      if (!STATE.auth.isLoggedIn) {
+        alert("Please Sign In first to book a clinical consultation.");
+        openModal("login-modal");
+        return;
+      }
+
+      const docId = parseInt(document.getElementById("booking-doc-id").value);
+      const docName = document.getElementById("booking-doc-name").value;
+      const docFee = parseInt(document.getElementById("booking-doc-fee").value);
+      const dateVal = document.getElementById("consult-date").value;
+      const timeVal = document.getElementById("booking-time-slot").value;
+      const notesVal = document.getElementById("consult-notes").value;
+
+      const newBooking = {
+        id: `CON-${Math.floor(100 + Math.random() * 900)}`,
+        doctorId: docId,
+        doctorName: docName,
+        date: dateVal,
+        time: timeVal,
+        notes: notesVal,
+        status: "Scheduled"
+      };
+
+      STATE.consultations.unshift(newBooking);
+      alert(`Booking Successful!\nConsultation with ${docName} scheduled for ${dateVal} at ${timeVal}.\nFee Paid: ₹${docFee}.`);
+      consultForm.reset();
+      
+      // Select slot button default again
+      slotBtns.forEach(b => b.classList.remove("selected"));
+      if (slotBtns[0]) {
+        slotBtns[0].classList.add("selected");
+        document.getElementById("booking-time-slot").value = slotBtns[0].getAttribute("data-time");
+      }
+      
+      renderDashboard();
+      
+      // Navigate to patient portal and click consultations tab
+      navigate("dashboard");
+      
+      // Activate Telehealth tab in patient dashboard
+      const telehealthTabBtn = document.querySelector("[data-dash-tab='telehealth']");
+      if (telehealthTabBtn) {
+        telehealthTabBtn.click();
+      }
+    });
+  }
+
+  // Dashboard "Book New Session" button click redirects to E-consultation section
+  document.addEventListener("click", (e) => {
+    if (e.target.closest(".btn-book-consultation")) {
+      navigate("consultation");
+    }
+  });
+
+  // Dashboard "Join Call" click handler
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".btn-join-video-call");
+    if (btn) {
+      const docName = btn.getAttribute("data-doc");
+      openLiveVideoConsultation(docName);
+    }
+  });
+}
+
+// Live simulated video call modal controls
+function openLiveVideoConsultation(doctorName) {
+  const modal = document.getElementById("video-consultation-modal");
+  const docNameSpan = document.getElementById("video-doctor-name");
+  const docAvatar = document.getElementById("video-doctor-avatar");
+  const docStatus = document.getElementById("video-doctor-status");
+  const timerText = document.getElementById("video-call-timer");
+  const messagesBox = document.getElementById("telehealth-chat-messages");
+
+  if (!modal) return;
+
+  docNameSpan.textContent = doctorName;
+  const avatarInitials = doctorName.split(" ").map(w => w[0]).filter(c => c !== "D" && c !== "r" && c !== ".").join("");
+  docAvatar.textContent = avatarInitials;
+
+  // Reset status, timer, and messages
+  docStatus.textContent = "Connecting to secure clinical server...";
+  timerText.textContent = "00:00";
+  messagesBox.innerHTML = `
+    <div style="background: var(--white); border-radius: var(--radius-sm); padding: 10px; font-size: 12.5px; line-height: 1.4; border-left: 3px solid var(--primary);">
+      <strong style="color: var(--primary);">System:</strong> Secure clinical channel established. Dr. ${avatarInitials} will provide diagnostic details and digital prescription updates here.
+    </div>
+  `;
+
+  openModal("video-consultation-modal");
+
+  let seconds = 0;
+  if (callTimerInterval) clearInterval(callTimerInterval);
+
+  callTimerInterval = setInterval(() => {
+    seconds++;
+    const min = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const sec = String(seconds % 60).padStart(2, '0');
+    timerText.textContent = `${min}:${sec}`;
+
+    // Status transition simulation
+    if (seconds === 3) {
+      docStatus.textContent = "Practitioner joining clinical consultation room...";
+    } else if (seconds === 6) {
+      docStatus.textContent = "Live Call Active";
+      
+      // Inject doctor's first message
+      appendTelehealthMessage(doctorName, `Hello Rahul, thank you for scheduling this session. How are you feeling today?`);
+    } else if (seconds === 15) {
+      appendTelehealthMessage(doctorName, `I noticed you're seeking guidance. Please detail any digestion issues or gastric acidity you've been having.`);
+    }
+  }, 1000);
+
+  // Send message events inside consultation
+  const chatInput = document.getElementById("telehealth-chat-input");
+  const sendBtn = document.getElementById("btn-send-telehealth-msg");
+
+  function sendUserMsg() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    appendTelehealthMessage("You", text);
+    chatInput.value = "";
+
+    // Simulate doctor response
+    setTimeout(() => {
+      const docReplies = [
+        "Understood. That is consistent with excess Pitta dosha in your digestive tract.",
+        "I suggest avoiding raw food or heavy spices for the next 7 days. I am writing down a prescription for Gandharvahastadi Kashayam.",
+        "Take 15ml of the kashayam with warm water before meals. I will upload this prescription to your vault right away.",
+        "Do you have any other clinical questions regarding your routine?"
+      ];
+      const randomReply = docReplies[Math.floor(Math.random() * docReplies.length)];
+      appendTelehealthMessage(doctorName, randomReply);
+    }, 2000);
+  }
+
+  if (sendBtn) {
+    sendBtn.onclick = sendUserMsg;
+  }
+  if (chatInput) {
+    chatInput.onkeypress = (e) => {
+      if (e.key === "Enter") sendUserMsg();
+    };
+  }
+
+  // Audio/Video control toggle icons
+  const audioBtn = document.getElementById("btn-toggle-audio");
+  const videoBtn = document.getElementById("btn-toggle-video");
+  const hangupBtn = document.getElementById("btn-hangup-call");
+
+  if (audioBtn) {
+    audioBtn.onclick = () => {
+      const icon = audioBtn.querySelector("i");
+      icon.classList.toggle("fa-microphone");
+      icon.classList.toggle("fa-microphone-slash");
+      audioBtn.classList.toggle("muted");
+    };
+  }
+
+  if (videoBtn) {
+    videoBtn.onclick = () => {
+      const icon = videoBtn.querySelector("i");
+      icon.classList.toggle("fa-video");
+      icon.classList.toggle("fa-video-slash");
+      videoBtn.classList.toggle("muted");
+    };
+  }
+
+  if (hangupBtn) {
+    hangupBtn.onclick = () => {
+      clearInterval(callTimerInterval);
+      closeAllModals();
+      alert(`Consultation call with ${doctorName} has ended successfully.`);
+    };
+  }
+}
+
+function appendTelehealthMessage(sender, text) {
+  const messagesBox = document.getElementById("telehealth-chat-messages");
+  if (!messagesBox) return;
+
+  const isYou = sender === "You";
+  const msgDiv = document.createElement("div");
+  msgDiv.style.backgroundColor = isYou ? "var(--bg-light)" : "var(--white)";
+  msgDiv.style.borderRadius = "var(--radius-sm)";
+  msgDiv.style.padding = "10px";
+  msgDiv.style.fontSize = "12.5px";
+  msgDiv.style.lineHeight = "1.4";
+  msgDiv.style.alignSelf = isYou ? "flex-end" : "flex-start";
+  msgDiv.style.maxWidth = "85%";
+  msgDiv.style.boxShadow = "var(--shadow-sm)";
+  msgDiv.style.borderLeft = isYou ? "3px solid var(--secondary)" : "3px solid var(--primary)";
+
+  msgDiv.innerHTML = `<strong style="color: ${isYou ? 'var(--secondary)' : 'var(--primary)'};">${sender}:</strong> ${text}`;
+  messagesBox.appendChild(msgDiv);
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+}
+
+
