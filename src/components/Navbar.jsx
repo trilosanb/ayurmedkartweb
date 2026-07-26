@@ -48,8 +48,11 @@ export const Navbar = () => {
       <div className="container header-container">
         {/* Brand Logo */}
         <Link to="/" className="logo">
-          <img src="/logo.png" alt="AyurMedKart Logo" style={{ height: "40px", width: "auto", objectFit: "contain" }} />
-          Ayur<span>MedKart</span>
+          <img src="/logo.png" alt="AyurMedKart Logo" style={{ height: "36px", width: "auto", objectFit: "contain" }} />
+          <span style={{ letterSpacing: "-0.8px" }}>
+            <span style={{ color: "var(--primary)" }}>Ayur</span>
+            <span style={{ color: "var(--secondary)" }}>MedKart</span>
+          </span>
         </Link>
 
         {/* Navigation Menu */}
@@ -172,7 +175,7 @@ export const Navbar = () => {
         {/* Action Controls */}
         <div className="nav-actions">
           {/* Cart Button */}
-          <button className="cart-icon-btn" aria-label="Open Cart" onClick={() => setIsCartOpen(true)}>
+          <button className="cart-icon-btn" aria-label="Open Cart" onClick={() => navigate('/cart')}>
             <i className="fas fa-shopping-basket"></i>
             {cartCount > 0 && <span className="badge cart-count-badge">{cartCount}</span>}
           </button>

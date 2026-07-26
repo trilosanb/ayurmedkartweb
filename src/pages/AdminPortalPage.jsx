@@ -11,6 +11,21 @@ export const AdminPortalPage = () => {
 
   const [activeAdminTab, setActiveAdminTab] = useState("medicine");
 
+  // Filter States for Admin Tabs
+  // Tab 1 & Tab 2 Medicine Filters
+  const [medSearch, setMedSearch] = useState("");
+  const [medCategory, setMedCategory] = useState("all");
+  const [medMfg, setMedMfg] = useState("all");
+
+  // Tab 3 Order Book Filters
+  const [orderSearch, setOrderSearch] = useState("");
+  const [orderDate, setOrderDate] = useState("");
+  const [orderStatus, setOrderStatus] = useState("all");
+
+  // Tab 4 Telehealth Consultations Filters
+  const [consultDate, setConsultDate] = useState("");
+  const [consultDoc, setConsultDoc] = useState("all");
+
   // Local Admin Medicines Inventory State
   const [adminMedicines, setAdminMedicines] = useState(() => {
     return MEDICINES.map(m => ({ ...m, stockQty: m.id % 2 === 0 ? 45 : (m.id === 3 ? 8 : 120) }));
@@ -51,6 +66,14 @@ export const AdminPortalPage = () => {
     }
   ]);
 
+  // Telehealth Consultations Data
+  const consultationsList = [
+    { id: "CON-789", patient: "Rahul Kumar (rahul.kumar@gmail.com)", doctorId: "1", doctorName: "Dr. Aravind Sharma", specialty: "Kayachikitsa & General Wellness", date: "2026-07-28", time: "10:00 AM", status: "Confirmed", fee: 500 },
+    { id: "CON-790", patient: "Anjali Sharma (anjali@gmail.com)", doctorId: "2", doctorName: "Dr. Priya Nair", specialty: "Stri Roga & Prasuti Tantra", date: "2026-07-28", time: "11:30 AM", status: "Confirmed", fee: 600 },
+    { id: "CON-791", patient: "Vikram Sethi (vikram@gmail.com)", doctorId: "3", doctorName: "Dr. Manoj K. Acharya", specialty: "Shalya Tantra & Spine Care", date: "2026-07-29", time: "02:00 PM", status: "Completed", fee: 550 },
+    { id: "CON-792", patient: "Sujata Roy (sujata@gmail.com)", doctorId: "1", doctorName: "Dr. Aravind Sharma", specialty: "Kayachikitsa & General Wellness", date: "2026-07-30", time: "04:00 PM", status: "Confirmed", fee: 500 }
+  ];
+
   // Modal State for Adding New Medicine
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
   const [newMedName, setNewMedName] = useState("");
@@ -60,6 +83,19 @@ export const AdminPortalPage = () => {
   const [newMedCat, setNewMedCat] = useState("immunity");
   const [newMedRx, setNewMedRx] = useState(false);
   const [newMedStock, setNewMedStock] = useState("50");
+  const [newMedImage, setNewMedImage] = useState("https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&q=80&w=300");
+
+  // Handle Photo File Upload
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewMedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
@@ -91,7 +127,7 @@ export const AdminPortalPage = () => {
       condition: newMedCat,
       formulation: "tablet",
       prescriptionRequired: newMedRx,
-      image: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&q=80&w=300",
+      image: newMedImage || "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&q=80&w=300",
       ingredients: "Pure Ayurvedic Extract",
       benefits: "Formulated for holistic wellness",
       dosage: "1 tablet twice daily",
@@ -104,7 +140,8 @@ export const AdminPortalPage = () => {
     setNewMedName("");
     setNewMedMRP("350");
     setNewMedPrice("280");
-    alert(`Medicine "${newMedName}" added with MRP ₹${mrp}, Discounted Price ₹${sellingPrice} (${discountPercent}% OFF)!`);
+    setNewMedImage("https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&q=80&w=300");
+    alert(`Medicine "${newMedName}" added with photo & details successfully!`);
   };
 
   const handleUpdateStock = (id, delta) => {
@@ -126,6 +163,30 @@ export const AdminPortalPage = () => {
   const handleUpdateOrderStatus = (orderId, newStatus) => {
     setAdminOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
   };
+
+  // FILTERED LIST COMPUTATIONS
+  // Medicines Filtering
+  const filteredAdminMedicines = adminMedicines.filter(m => {
+    const matchesSearch = !medSearch || m.name.toLowerCase().includes(medSearch.toLowerCase()) || m.manufacturer.toLowerCase().includes(medSearch.toLowerCase());
+    const matchesCat = medCategory === "all" || m.category === medCategory;
+    const matchesMfg = medMfg === "all" || m.manufacturer === medMfg;
+    return matchesSearch && matchesCat && matchesMfg;
+  });
+
+  // Orders Filtering
+  const filteredAdminOrders = adminOrders.filter(o => {
+    const matchesSearch = !orderSearch || o.id.toLowerCase().includes(orderSearch.toLowerCase()) || o.customer.toLowerCase().includes(orderSearch.toLowerCase());
+    const matchesDate = !orderDate || o.date === orderDate;
+    const matchesStatus = orderStatus === "all" || o.status === orderStatus;
+    return matchesSearch && matchesDate && matchesStatus;
+  });
+
+  // Telehealth Filtering
+  const filteredConsultations = consultationsList.filter(c => {
+    const matchesDate = !consultDate || c.date === consultDate;
+    const matchesDoc = consultDoc === "all" || c.doctorId === consultDoc;
+    return matchesDate && matchesDoc;
+  });
 
   // 1. ADMIN LOGIN SCREEN (WHEN SIGNED OUT)
   if (!isAdminLoggedIn) {
@@ -179,6 +240,9 @@ export const AdminPortalPage = () => {
   // Calculate overview stats
   const totalRevenue = adminOrders.reduce((sum, o) => sum + o.total, 0) + 148000;
   const lowStockCount = adminMedicines.filter(m => m.stockQty < 15).length;
+
+  // Unique Manufacturers for dropdown
+  const uniqueManufacturers = Array.from(new Set(adminMedicines.map(m => m.manufacturer)));
 
   // 2. ADMIN PORTAL DASHBOARD (WHEN SIGNED IN)
   return (
@@ -272,6 +336,59 @@ export const AdminPortalPage = () => {
               </button>
             </div>
 
+            {/* TAB 1 FILTER BAR */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
+              <div style={{ position: "relative", flex: 1, minWidth: "220px" }}>
+                <i className="fas fa-search" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontSize: "12px" }}></i>
+                <input 
+                  type="text"
+                  placeholder="Search medicine name or manufacturer..."
+                  value={medSearch}
+                  onChange={(e) => setMedSearch(e.target.value)}
+                  style={{ width: "100%", padding: "8px 12px 8px 34px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontSize: "12.5px" }}
+                />
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)" }}>Category:</label>
+                <select 
+                  value={medCategory} 
+                  onChange={(e) => setMedCategory(e.target.value)}
+                  style={{ padding: "8px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontSize: "12.5px", background: "white" }}
+                >
+                  <option value="all">All Categories</option>
+                  <option value="immunity">Immunity Boosters</option>
+                  <option value="digestive">Digestive Care</option>
+                  <option value="preventive">Preventive Care</option>
+                  <option value="women">Women's Health</option>
+                  <option value="skin">Skin & Hair</option>
+                </select>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)" }}>Manufacturer:</label>
+                <select 
+                  value={medMfg} 
+                  onChange={(e) => setMedMfg(e.target.value)}
+                  style={{ padding: "8px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontSize: "12.5px", background: "white" }}
+                >
+                  <option value="all">All Manufacturers</option>
+                  {uniqueManufacturers.map((mfg, idx) => (
+                    <option key={idx} value={mfg}>{mfg}</option>
+                  ))}
+                </select>
+              </div>
+
+              {(medSearch || medCategory !== "all" || medMfg !== "all") && (
+                <button 
+                  onClick={() => { setMedSearch(""); setMedCategory("all"); setMedMfg("all"); }}
+                  style={{ padding: "7px 12px", borderRadius: "var(--radius-sm)", border: "1px solid #ffc9c9", background: "#fff0f0", color: "#e03131", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                >
+                  <i className="fas fa-times"></i> Reset Filters
+                </button>
+              )}
+            </div>
+
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
                 <thead>
@@ -286,47 +403,56 @@ export const AdminPortalPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {adminMedicines.map(med => (
-                    <tr key={med.id} style={{ borderBottom: "1px solid var(--border-color)" }}>
-                      <td style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px" }}>
-                        <img src={med.image} alt={med.name} style={{ width: "36px", height: "36px", borderRadius: "4px", objectFit: "cover" }} />
-                        <strong style={{ color: "var(--text-dark)" }}>{med.name}</strong>
-                      </td>
-                      <td style={{ padding: "12px", color: "var(--text-muted)" }}>{med.manufacturer}</td>
-                      <td style={{ padding: "12px" }}><span style={{ background: "#e6f7f5", color: "var(--primary)", padding: "2px 8px", borderRadius: "4px", fontSize: "11.5px", textTransform: "capitalize" }}>{med.category}</span></td>
-                      <td style={{ padding: "12px" }}>
-                        <div>
-                          <strong style={{ color: "var(--primary)", fontSize: "14px" }}>₹{med.price}</strong>
-                          <span style={{ fontSize: "11.5px", color: "var(--text-muted)", textDecoration: "line-through", marginLeft: "6px" }}>₹{med.originalPrice}</span>
-                          <span style={{ fontSize: "10.5px", fontWeight: 700, color: "#2b8a3e", backgroundColor: "#e6fcf5", padding: "1px 6px", borderRadius: "4px", marginLeft: "6px" }}>-{med.discount}% OFF</span>
-                        </div>
-                      </td>
-                      <td style={{ padding: "12px" }}>
-                        {med.prescriptionRequired ? (
-                          <span style={{ background: "#fff2e6", color: "#d9640a", padding: "2px 8px", borderRadius: "4px", fontSize: "11px", fontWeight: 700 }}>Rx Required</span>
-                        ) : (
-                          <span style={{ background: "#e6fcf5", color: "#2b8a3e", padding: "2px 8px", borderRadius: "4px", fontSize: "11px", fontWeight: 700 }}>OTC Free</span>
-                        )}
-                      </td>
-                      <td style={{ padding: "12px" }}>
-                        <span style={{ fontWeight: 600, color: med.stockQty < 15 ? "#d9640a" : "var(--text-dark)" }}>{med.stockQty} Units</span>
-                      </td>
-                      <td style={{ padding: "10px 12px", textAlign: "right", whiteSpace: "nowrap" }}>
-                        <button 
-                          onClick={() => handleUpdateStock(med.id, 10)} 
-                          style={{ padding: "4px 9px", fontSize: "11.5px", fontWeight: 600, borderRadius: "4px", border: "1px solid var(--primary)", color: "var(--primary)", backgroundColor: "#f4faf8", cursor: "pointer", marginRight: "6px" }}
-                        >
-                          + Stock
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteMedicine(med.id)} 
-                          style={{ padding: "4px 9px", fontSize: "11.5px", fontWeight: 600, borderRadius: "4px", border: "1px solid #ffc9c9", color: "#e03131", backgroundColor: "#fff0f0", cursor: "pointer" }}
-                        >
-                          Delete
-                        </button>
+                  {filteredAdminMedicines.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)" }}>
+                        <i className="fas fa-filter" style={{ fontSize: "24px", marginBottom: "8px", color: "var(--primary)" }}></i>
+                        <p style={{ margin: 0 }}>No medicines found matching selected category/manufacturer filters.</p>
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    filteredAdminMedicines.map(med => (
+                      <tr key={med.id} style={{ borderBottom: "1px solid var(--border-color)" }}>
+                        <td style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px" }}>
+                          <img src={med.image} alt={med.name} style={{ width: "36px", height: "36px", borderRadius: "4px", objectFit: "cover" }} />
+                          <strong style={{ color: "var(--text-dark)" }}>{med.name}</strong>
+                        </td>
+                        <td style={{ padding: "12px", color: "var(--text-muted)" }}>{med.manufacturer}</td>
+                        <td style={{ padding: "12px" }}><span style={{ background: "#e6f7f5", color: "var(--primary)", padding: "2px 8px", borderRadius: "4px", fontSize: "11.5px", textTransform: "capitalize" }}>{med.category}</span></td>
+                        <td style={{ padding: "12px" }}>
+                          <div>
+                            <strong style={{ color: "var(--primary)", fontSize: "14px" }}>₹{med.price}</strong>
+                            <span style={{ fontSize: "11.5px", color: "var(--text-muted)", textDecoration: "line-through", marginLeft: "6px" }}>₹{med.originalPrice}</span>
+                            <span style={{ fontSize: "10.5px", fontWeight: 700, color: "#2b8a3e", backgroundColor: "#e6fcf5", padding: "1px 6px", borderRadius: "4px", marginLeft: "6px" }}>-{med.discount}% OFF</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: "12px" }}>
+                          {med.prescriptionRequired ? (
+                            <span style={{ background: "#fff2e6", color: "#d9640a", padding: "2px 8px", borderRadius: "4px", fontSize: "11px", fontWeight: 700 }}>Rx Required</span>
+                          ) : (
+                            <span style={{ background: "#e6fcf5", color: "#2b8a3e", padding: "2px 8px", borderRadius: "4px", fontSize: "11px", fontWeight: 700 }}>OTC Free</span>
+                          )}
+                        </td>
+                        <td style={{ padding: "12px" }}>
+                          <span style={{ fontWeight: 600, color: med.stockQty < 15 ? "#d9640a" : "var(--text-dark)" }}>{med.stockQty} Units</span>
+                        </td>
+                        <td style={{ padding: "10px 12px", textAlign: "right", whiteSpace: "nowrap" }}>
+                          <button 
+                            onClick={() => handleUpdateStock(med.id, 10)} 
+                            style={{ padding: "4px 9px", fontSize: "11.5px", fontWeight: 600, borderRadius: "4px", border: "1px solid var(--primary)", color: "var(--primary)", backgroundColor: "#f4faf8", cursor: "pointer", marginRight: "6px" }}
+                          >
+                            + Stock
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteMedicine(med.id)} 
+                            style={{ padding: "4px 9px", fontSize: "11.5px", fontWeight: 600, borderRadius: "4px", border: "1px solid #ffc9c9", color: "#e03131", backgroundColor: "#fff0f0", cursor: "pointer" }}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -339,21 +465,81 @@ export const AdminPortalPage = () => {
             <h3 style={{ margin: "0 0 6px 0", color: "var(--primary)" }}>Inventory Stock Control</h3>
             <p style={{ margin: "0 0 20px 0", fontSize: "13px", color: "var(--text-muted)" }}>Monitor stock levels and adjust quantity for all active formulations.</p>
 
+            {/* TAB 2 FILTER BAR */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
+              <div style={{ position: "relative", flex: 1, minWidth: "220px" }}>
+                <i className="fas fa-search" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontSize: "12px" }}></i>
+                <input 
+                  type="text"
+                  placeholder="Search inventory medicine name or manufacturer..."
+                  value={medSearch}
+                  onChange={(e) => setMedSearch(e.target.value)}
+                  style={{ width: "100%", padding: "8px 12px 8px 34px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontSize: "12.5px" }}
+                />
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)" }}>Category:</label>
+                <select 
+                  value={medCategory} 
+                  onChange={(e) => setMedCategory(e.target.value)}
+                  style={{ padding: "8px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontSize: "12.5px", background: "white" }}
+                >
+                  <option value="all">All Categories</option>
+                  <option value="immunity">Immunity Boosters</option>
+                  <option value="digestive">Digestive Care</option>
+                  <option value="preventive">Preventive Care</option>
+                  <option value="women">Women's Health</option>
+                  <option value="skin">Skin & Hair</option>
+                </select>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)" }}>Manufacturer:</label>
+                <select 
+                  value={medMfg} 
+                  onChange={(e) => setMedMfg(e.target.value)}
+                  style={{ padding: "8px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontSize: "12.5px", background: "white" }}
+                >
+                  <option value="all">All Manufacturers</option>
+                  {uniqueManufacturers.map((mfg, idx) => (
+                    <option key={idx} value={mfg}>{mfg}</option>
+                  ))}
+                </select>
+              </div>
+
+              {(medSearch || medCategory !== "all" || medMfg !== "all") && (
+                <button 
+                  onClick={() => { setMedSearch(""); setMedCategory("all"); setMedMfg("all"); }}
+                  style={{ padding: "7px 12px", borderRadius: "var(--radius-sm)", border: "1px solid #ffc9c9", background: "#fff0f0", color: "#e03131", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                >
+                  <i className="fas fa-times"></i> Reset Filters
+                </button>
+              )}
+            </div>
+
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
-              {adminMedicines.map(med => (
-                <div key={med.id} style={{ border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", padding: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div>
-                    <h4 style={{ margin: "0 0 4px 0", fontSize: "14px", color: "var(--text-dark)" }}>{med.name}</h4>
-                    <span style={{ fontSize: "12px", color: med.stockQty < 15 ? "#d9640a" : "var(--text-muted)", fontWeight: med.stockQty < 15 ? 700 : 400 }}>
-                      Status: {med.stockQty < 15 ? '⚠️ Low Stock' : 'In Stock'} ({med.stockQty} Units)
-                    </span>
-                  </div>
-                  <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                    <button className="btn btn-light btn-sm" onClick={() => handleUpdateStock(med.id, -5)}>-5</button>
-                    <button className="btn btn-primary btn-sm" onClick={() => handleUpdateStock(med.id, 20)}>+20</button>
-                  </div>
+              {filteredAdminMedicines.length === 0 ? (
+                <div style={{ gridColumn: "1 / -1", padding: "30px", textAlign: "center", color: "var(--text-muted)", background: "#f8faf9", borderRadius: "var(--radius-sm)" }}>
+                  <p style={{ margin: 0 }}>No inventory formulations match the current category/manufacturer filters.</p>
                 </div>
-              ))}
+              ) : (
+                filteredAdminMedicines.map(med => (
+                  <div key={med.id} style={{ border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", padding: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <h4 style={{ margin: "0 0 4px 0", fontSize: "14px", color: "var(--text-dark)" }}>{med.name}</h4>
+                      <span style={{ fontSize: "11.5px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>{med.manufacturer}</span>
+                      <span style={{ fontSize: "12px", color: med.stockQty < 15 ? "#d9640a" : "var(--text-muted)", fontWeight: med.stockQty < 15 ? 700 : 400 }}>
+                        Status: {med.stockQty < 15 ? '⚠️ Low Stock' : 'In Stock'} ({med.stockQty} Units)
+                      </span>
+                    </div>
+                    <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                      <button className="btn btn-light btn-sm" onClick={() => handleUpdateStock(med.id, -5)}>-5</button>
+                      <button className="btn btn-primary btn-sm" onClick={() => handleUpdateStock(med.id, 20)}>+20</button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}
@@ -364,43 +550,100 @@ export const AdminPortalPage = () => {
             <h3 style={{ margin: "0 0 6px 0", color: "var(--primary)" }}>Order Book & Shipping Fulfillment</h3>
             <p style={{ margin: "0 0 20px 0", fontSize: "13px", color: "var(--text-muted)" }}>Track customer purchases and update shipping fulfillment status.</p>
 
-            {adminOrders.map(order => (
-              <div key={order.id} style={{ border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", padding: "16px", marginBottom: "14px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "10px", marginBottom: "10px" }}>
-                  <div>
-                    <strong style={{ fontSize: "14px", color: "var(--primary)" }}>Order ID: {order.id}</strong>
-                    <span style={{ fontSize: "12px", color: "var(--text-muted)", marginLeft: "12px" }}>{order.customer} • {order.date}</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-dark)" }}>Status:</span>
-                    <select 
-                      value={order.status}
-                      onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
-                      style={{ padding: "4px 8px", borderRadius: "4px", border: "1px solid var(--border-color)", fontSize: "12.5px", fontWeight: 600, backgroundColor: "#f8faf9" }}
-                    >
-                      <option value="Placed">Placed</option>
-                      <option value="Packed">Packed</option>
-                      <option value="Shipped">Shipped</option>
-                      <option value="Delivered">Delivered</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div style={{ fontSize: "13px" }}>
-                  {order.items.map((item, i) => (
-                    <div key={i} style={{ display: "flex", justifyContent: "space-between", color: "var(--text-dark)", padding: "2px 0" }}>
-                      <span>{item.name} x {item.qty}</span>
-                      <span>₹{item.price * item.qty}</span>
-                    </div>
-                  ))}
-                  <div style={{ borderTop: "1px solid var(--border-color)", marginTop: "8px", paddingTop: "6px", fontWeight: 700, color: "var(--primary)", display: "flex", justifyContent: "space-between" }}>
-                    <span>Total Amount:</span>
-                    <span>₹{order.total}</span>
-                  </div>
-                </div>
+            {/* TAB 3 FILTER BAR (DATE & STATUS FILTERS) */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
+              <div style={{ position: "relative", flex: 1, minWidth: "200px" }}>
+                <i className="fas fa-search" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontSize: "12px" }}></i>
+                <input 
+                  type="text"
+                  placeholder="Search Order ID or customer..."
+                  value={orderSearch}
+                  onChange={(e) => setOrderSearch(e.target.value)}
+                  style={{ width: "100%", padding: "8px 12px 8px 34px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontSize: "12.5px" }}
+                />
               </div>
-            ))}
+
+              {/* Date-wise Filter */}
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)" }}><i className="far fa-calendar-alt"></i> Order Date:</label>
+                <input 
+                  type="date"
+                  value={orderDate}
+                  onChange={(e) => setOrderDate(e.target.value)}
+                  style={{ padding: "7px 10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontSize: "12.5px", background: "white" }}
+                />
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)" }}>Fulfillment Status:</label>
+                <select 
+                  value={orderStatus}
+                  onChange={(e) => setOrderStatus(e.target.value)}
+                  style={{ padding: "8px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontSize: "12.5px", background: "white" }}
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="Placed">Placed</option>
+                  <option value="Packed">Packed</option>
+                  <option value="Shipped">Shipped</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </div>
+
+              {(orderSearch || orderDate || orderStatus !== "all") && (
+                <button 
+                  onClick={() => { setOrderSearch(""); setOrderDate(""); setOrderStatus("all"); }}
+                  style={{ padding: "7px 12px", borderRadius: "var(--radius-sm)", border: "1px solid #ffc9c9", background: "#fff0f0", color: "#e03131", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                >
+                  <i className="fas fa-times"></i> Reset Filters
+                </button>
+              )}
+            </div>
+
+            {filteredAdminOrders.length === 0 ? (
+              <div style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)", background: "#f8faf9", borderRadius: "var(--radius-sm)" }}>
+                <i className="far fa-calendar-times" style={{ fontSize: "24px", marginBottom: "8px", color: "var(--primary)" }}></i>
+                <p style={{ margin: 0 }}>No orders found for the selected date or fulfillment status filters.</p>
+              </div>
+            ) : (
+              filteredAdminOrders.map(order => (
+                <div key={order.id} style={{ border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", padding: "16px", marginBottom: "14px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "10px", marginBottom: "10px" }}>
+                    <div>
+                      <strong style={{ fontSize: "14px", color: "var(--primary)" }}>Order ID: {order.id}</strong>
+                      <span style={{ fontSize: "12px", color: "var(--text-muted)", marginLeft: "12px" }}>{order.customer} • <strong>Date: {order.date}</strong></span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-dark)" }}>Status:</span>
+                      <select 
+                        value={order.status}
+                        onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                        style={{ padding: "4px 8px", borderRadius: "4px", border: "1px solid var(--border-color)", fontSize: "12.5px", fontWeight: 600, backgroundColor: "#f8faf9" }}
+                      >
+                        <option value="Placed">Placed</option>
+                        <option value="Packed">Packed</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ fontSize: "13px" }}>
+                    {order.items.map((item, i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", color: "var(--text-dark)", padding: "2px 0" }}>
+                        <span>{item.name} x {item.qty}</span>
+                        <span>₹{item.price * item.qty}</span>
+                      </div>
+                    ))}
+                    <div style={{ borderTop: "1px solid var(--border-color)", marginTop: "8px", paddingTop: "6px", fontWeight: 700, color: "var(--primary)", display: "flex", justifyContent: "space-between" }}>
+                      <span>Total Amount:</span>
+                      <span>₹{order.total}</span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
 
@@ -410,19 +653,68 @@ export const AdminPortalPage = () => {
             <h3 style={{ margin: "0 0 6px 0", color: "var(--primary)" }}>Scheduled Telehealth Consultations</h3>
             <p style={{ margin: "0 0 20px 0", fontSize: "13px", color: "var(--text-muted)" }}>View doctor appointment schedules and patient clinical records.</p>
 
+            {/* TAB 4 FILTER BAR (DATE & DOCTOR FILTERS) */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", backgroundColor: "#f8faf9", padding: "14px 16px", borderRadius: "var(--radius-sm)", marginBottom: "20px", border: "1px solid var(--border-color)" }}>
+              {/* Date-wise Filter */}
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)" }}><i className="far fa-calendar-alt"></i> Consultation Date:</label>
+                <input 
+                  type="date"
+                  value={consultDate}
+                  onChange={(e) => setConsultDate(e.target.value)}
+                  style={{ padding: "7px 10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontSize: "12.5px", background: "white" }}
+                />
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)" }}>Doctor Specialist:</label>
+                <select 
+                  value={consultDoc}
+                  onChange={(e) => setConsultDoc(e.target.value)}
+                  style={{ padding: "8px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontSize: "12.5px", background: "white" }}
+                >
+                  <option value="all">All Clinical Specialists</option>
+                  {DOCTORS.map(doc => (
+                    <option key={doc.id} value={String(doc.id)}>{doc.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {(consultDate || consultDoc !== "all") && (
+                <button 
+                  onClick={() => { setConsultDate(""); setConsultDoc("all"); }}
+                  style={{ padding: "7px 12px", borderRadius: "var(--radius-sm)", border: "1px solid #ffc9c9", background: "#fff0f0", color: "#e03131", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                >
+                  <i className="fas fa-times"></i> Reset Filters
+                </button>
+              )}
+            </div>
+
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {DOCTORS.map(doc => (
-                <div key={doc.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "var(--primary)", color: "var(--white)", fontWeight: 700, display: "flex", alignItems: "center", justifyCenter: "center" }}>{doc.avatar}</div>
-                    <div>
-                      <h4 style={{ margin: 0, fontSize: "14px", color: "var(--text-dark)" }}>{doc.name}</h4>
-                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{doc.edu} • Fee: ₹{doc.fee}</span>
-                    </div>
-                  </div>
-                  <span className="badge-tag" style={{ background: "#e6f7f5", color: "var(--primary)" }}>Active Clinical Schedule</span>
+              {filteredConsultations.length === 0 ? (
+                <div style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)", background: "#f8faf9", borderRadius: "var(--radius-sm)" }}>
+                  <i className="far fa-calendar-times" style={{ fontSize: "24px", marginBottom: "8px", color: "var(--primary)" }}></i>
+                  <p style={{ margin: 0 }}>No consultations scheduled on selected date or doctor filter.</p>
                 </div>
-              ))}
+              ) : (
+                filteredConsultations.map(con => (
+                  <div key={con.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                      <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "var(--primary)", color: "var(--white)", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}>
+                        <i className="fas fa-video"></i>
+                      </div>
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: "14.5px", color: "var(--text-dark)" }}>{con.patient}</h4>
+                        <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 600 }}>{con.doctorName} • {con.specialty}</span>
+                        <div style={{ fontSize: "11.5px", color: "var(--text-muted)", marginTop: "2px" }}>
+                          <i className="far fa-clock" style={{ marginRight: "4px" }}></i> <strong>Date: {con.date}</strong> at {con.time} • Fee: ₹{con.fee}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="badge-tag" style={{ background: "#e6f7f5", color: "var(--primary)", fontWeight: 700 }}>{con.status}</span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}
@@ -447,12 +739,56 @@ export const AdminPortalPage = () => {
                 <label style={{ fontSize: "12.5px", fontWeight: 600, display: "block", marginBottom: "4px" }}>Manufacturer / Brand</label>
                 <select value={newMedMfg} onChange={(e) => setNewMedMfg(e.target.value)} style={{ width: "100%", padding: "10px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)" }}>
                   <option value="Himalaya Wellness">Himalaya Wellness</option>
-                  <option value="Dabur">Dabur Care</option>
+                  <option value="Dabur Care">Dabur Care</option>
                   <option value="Baidyanath">Baidyanath</option>
                   <option value="Kerala Ayurveda">Kerala Ayurveda</option>
-                  <option value="Zandu">Zandu Healthcare</option>
-                  <option value="AyurVeda Research">AVP Coimbatore</option>
+                  <option value="Zandu Healthcare">Zandu Healthcare</option>
+                  <option value="AVP Coimbatore">AVP Coimbatore</option>
                 </select>
+              </div>
+
+              {/* MEDICINE PHOTO UPLOADER & IMAGE URL */}
+              <div className="form-group" style={{ background: "#f8faf9", padding: "12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)" }}>
+                <label style={{ fontSize: "12.5px", fontWeight: 600, display: "block", marginBottom: "6px", color: "var(--primary)" }}>
+                  <i className="fas fa-camera" style={{ marginRight: "6px" }}></i> Medicine Photo / Formulation Image
+                </label>
+                
+                <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                  {/* Photo Preview Thumbnail */}
+                  <div style={{ width: "70px", height: "70px", borderRadius: "6px", overflow: "hidden", border: "1px solid var(--border-color)", background: "#fff", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {newMedImage ? (
+                      <img src={newMedImage} alt="Medicine Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : (
+                      <i className="fas fa-pills" style={{ fontSize: "24px", color: "var(--text-muted)" }}></i>
+                    )}
+                  </div>
+
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                    {/* Local File Upload Button */}
+                    <div>
+                      <label htmlFor="med-photo-file-upload" className="btn btn-outline btn-sm" style={{ padding: "6px 12px", fontSize: "11.5px", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                        <i className="fas fa-upload"></i> Upload Photo File
+                      </label>
+                      <input 
+                        type="file" 
+                        id="med-photo-file-upload" 
+                        accept="image/*" 
+                        style={{ display: "none" }} 
+                        onChange={handlePhotoUpload} 
+                      />
+                      <span style={{ fontSize: "11px", color: "var(--text-muted)", marginLeft: "8px" }}>Supports PNG, JPG, WebP</span>
+                    </div>
+
+                    {/* Image URL Input */}
+                    <input 
+                      type="text" 
+                      placeholder="Or paste Image URL (https://...)" 
+                      value={newMedImage} 
+                      onChange={(e) => setNewMedImage(e.target.value)} 
+                      style={{ width: "100%", padding: "6px 10px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", fontSize: "11.5px" }} 
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* PRICING & MRP OPTIONS */}

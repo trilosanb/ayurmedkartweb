@@ -6,9 +6,12 @@ export const Footer = () => {
     <footer>
       <div class="container footer-grid">
         <div class="footer-col brand-col">
-          <Link to="/" class="logo" style={{ marginBottom: "16px" }}>
-            <img src="/logo.png" alt="AyurMedKart" style={{ height: "36px" }} />
-            Ayur<span>MedKart</span>
+          <Link to="/" className="logo" style={{ marginBottom: "16px" }}>
+            <img src="/logo.png" alt="AyurMedKart" style={{ height: "32px" }} />
+            <span style={{ letterSpacing: "-0.8px" }}>
+              <span style={{ color: "var(--primary)" }}>Ayur</span>
+              <span style={{ color: "var(--secondary)" }}>MedKart</span>
+            </span>
           </Link>
           <p>India's trusted platform for classical Ayurvedic formulations and telemedicine consultation.</p>
         </div>

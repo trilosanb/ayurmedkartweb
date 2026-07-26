@@ -102,11 +102,12 @@ header.scrolled {
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   text-decoration: none;
   font-size: 24px;
-  font-weight: 600; /* Poppins SemiBold */
+  font-weight: 700; /* Poppins Bold */
   color: var(--primary);
+  letter-spacing: -0.8px;
 }
 
 .logo svg {
@@ -2902,6 +2903,44 @@ header .header-container {
 }
 
 /* ==========================================================================
+   CART PAGE — Desktop Base Styles
+   ========================================================================== */
+
+/* Two-column checkout grid: main content + order summary sidebar */
+.cart-checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* Step progress bar */
+.checkout-stepper-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+/* Address grid: name+phone row */
+.address-form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Address grid: city+state+pin row */
+.address-form-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+}
+
+/* ==========================================================================
    ENHANCED HOMEPAGE STYLES & RICH SECTIONS
    ========================================================================== */
 
@@ -3590,5 +3629,1510 @@ header .header-container {
   color: var(--text-muted);
 }
 
+/* ==========================================================================
+   SHOPPING BASKET SIDEBAR DRAWER (SOLID WHITE BACKGROUND)
+   ========================================================================== */
+.cart-sidebar-dialog {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  max-width: 92vw;
+  height: 100vh;
+  background-color: #ffffff !important;
+  color: var(--text-dark);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  z-index: 10000;
+  animation: slideInRight 0.3s ease-out;
+}
 
+.cart-header {
+  padding: 18px 20px;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
+.cart-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.close-cart-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.cart-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  background-color: #ffffff !important;
+}
+
+.cart-footer {
+  padding: 20px;
+  background-color: #ffffff !important;
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+}
+
+.cart-summary-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13.5px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+}
+
+.summary-row.total-row {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  border-top: 1px dashed var(--border-color);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE COMPACT STYLESHEET (<= 768px)
+   Strictly scoped to mobile viewports without affecting desktop view.
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Container & Core Typography */
+  .container {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  section {
+    padding: 18px 0 !important;
+  }
+
+  .section-title {
+    font-size: 19px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .section-subtitle {
+    font-size: 11.5px !important;
+    margin-bottom: 14px !important;
+  }
+
+  /* Single-Line Header & Navigation Bar */
+  header {
+    padding: 6px 0 !important;
+    height: 50px !important;
+  }
+
+  .header-container {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    height: 100% !important;
+  }
+
+  .logo {
+    font-size: 15px !important;
+    white-space: nowrap !important;
+  }
+
+  .logo img {
+    height: 26px !important;
+  }
+
+  /* Mobile Navbar Menu Drawer */
+  nav {
+    position: fixed !important;
+    top: 50px !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: calc(100vh - 50px) !important;
+    background-color: #071e18 !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    padding: 20px 16px !important;
+    gap: 14px !important;
+    transition: left 0.3s ease !important;
+    z-index: 1200 !important;
+  }
+
+  nav.active {
+    left: 0 !important;
+  }
+
+  nav a {
+    color: var(--white) !important;
+    font-size: 15px !important;
+    padding: 8px 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+  }
+
+  .menu-btn {
+    display: block !important;
+    background: none !important;
+    border: none !important;
+    color: var(--white) !important;
+    font-size: 18px !important;
+    padding: 2px !important;
+    cursor: pointer !important;
+  }
+
+  /* Single-Line Compact Navbar Search Bar */
+  .nav-global-search-container {
+    order: 0 !important;
+    flex: 1 !important;
+    max-width: 170px !important;
+    margin: 0 4px !important;
+  }
+
+  .nav-global-search-container:focus-within {
+    max-width: 220px !important;
+  }
+
+  .nav-search-input {
+    padding: 5px 20px 5px 26px !important;
+    font-size: 11px !important;
+    border-radius: 14px !important;
+    height: 28px !important;
+  }
+
+  .nav-search-icon {
+    left: 8px !important;
+    font-size: 10.5px !important;
+  }
+
+  .nav-search-dropdown-panel {
+    width: 100% !important;
+    left: 0 !important;
+    transform: none !important;
+    max-height: 320px !important;
+  }
+
+  .nav-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .cart-icon-btn, .notification-icon-btn, .login-icon-btn {
+    padding: 3px 5px !important;
+    font-size: 15px !important;
+  }
+
+  .login-btn-text {
+    display: none !important;
+  }
+
+  /* 16:9 Ratio Mobile Hero Slider Section */
+  .full-bg-hero-section {
+    height: 56.25vw !important;  /* 16:9 ratio */
+    min-height: 160px !important;
+    max-height: 260px !important;
+    margin-top: 50px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .full-hero-slide {
+    height: 100% !important;
+    min-height: unset !important;
+    padding-top: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .hero-content-container {
+    padding: 0 6px !important;
+  }
+
+  .hero-text-box {
+    max-width: 100% !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+  }
+
+  .hero-gold-badge {
+    font-size: 7.5px !important;
+    padding: 1px 5px !important;
+    margin-bottom: 3px !important;
+    display: inline-block !important;
+  }
+
+  .hero-main-title {
+    font-size: 14.5px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .hero-subtitle {
+    display: none !important; /* Hide long body text on mobile for ultra-compact 180px hero banner! */
+  }
+
+  .hero-cta-group {
+    justify-content: center !important;
+    gap: 4px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .btn-hero, .btn-hero-outline {
+    padding: 4px 8px !important;
+    font-size: 9px !important;
+  }
+
+  .hero-stats-row {
+    display: none !important; /* Hide heavy stats bar on mobile hero for clean 180px banner layout! */
+  }
+
+  .hero-arrow-btn {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 10px !important;
+  }
+
+  /* Compact Trust Badges Bar */
+  .trust-badges-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 4px !important;
+  }
+
+  .trust-badge-card {
+    padding: 6px !important;
+  }
+
+  .trust-badge-card i {
+    font-size: 14px !important;
+  }
+
+  .trust-badge-card h4 {
+    font-size: 10.5px !important;
+  }
+
+  .trust-badge-card p {
+    font-size: 8.5px !important;
+  }
+
+  /* STRICT 2 PRODUCTS PER ROW WITH FINE-TUNED CARD ELEMENTS */
+  .product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .product-card {
+    padding: 6px !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    position: relative !important;
+    background: #ffffff !important;
+    border: 1px solid var(--border-color) !important;
+  }
+
+  .product-badge {
+    font-size: 8px !important;
+    padding: 2px 5px !important;
+    top: 4px !important;
+    left: 4px !important;
+    border-radius: 3px !important;
+  }
+
+  .prescription-badge {
+    font-size: 7.5px !important;
+    padding: 2px 5px !important;
+    top: 4px !important;
+    right: 4px !important;
+    border-radius: 3px !important;
+  }
+
+  .product-img-box {
+    height: 95px !important;
+    overflow: hidden !important;
+    border-radius: 4px !important;
+  }
+
+  .product-img-box img {
+    height: 100% !important;
+    object-fit: cover !important;
+    width: 100% !important;
+  }
+
+  .product-body {
+    padding: 4px 0 0 0 !important;
+  }
+
+  .product-mfg {
+    font-size: 8.5px !important;
+    color: var(--text-muted) !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    margin-bottom: 2px !important;
+  }
+
+  .product-title {
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    height: 26px !important;
+    overflow: hidden !important;
+    margin-bottom: 2px !important;
+    color: var(--text-dark) !important;
+  }
+
+  .product-rating {
+    font-size: 8.5px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .product-rating .stars i {
+    font-size: 8px !important;
+    color: #f59f00 !important;
+  }
+
+  .product-pricing {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 4px !important;
+    margin-top: 2px !important;
+  }
+
+  .product-pricing .current-price {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    color: var(--primary) !important;
+  }
+
+  .product-pricing .original-price {
+    font-size: 9.5px !important;
+    color: var(--text-muted) !important;
+    text-decoration: line-through !important;
+  }
+
+  .product-actions .btn {
+    padding: 4px 6px !important;
+    font-size: 9.5px !important;
+    font-weight: 700 !important;
+    width: 100% !important;
+    margin-top: 4px !important;
+    border-radius: 4px !important;
+  }
+
+  /* Category Scroll Pills */
+  .category-pills-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 6px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .category-pills {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 4px !important;
+  }
+
+  .category-pill {
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Compact Brand Showcase Grid */
+  .brand-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .brand-card {
+    padding: 8px 4px !important;
+  }
+
+  .brand-card strong {
+    font-size: 11px !important;
+  }
+
+  /* Compact Why Choose Ayurveda Grid */
+  .why-ayurveda-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .why-card {
+    padding: 10px 8px !important;
+  }
+
+  .why-card h4 {
+    font-size: 12px !important;
+  }
+
+  .why-card p {
+    font-size: 10.5px !important;
+  }
+
+  /* Testimonials Grid */
+  .testimonials-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .testimonial-card {
+    padding: 14px !important;
+  }
+
+  /* Telehealth CTA Banner */
+  .dosha-cta-banner {
+    padding: 24px 16px !important;
+    text-align: center !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  .dosha-cta-banner h3 {
+    font-size: 20px !important;
+  }
+
+  .dosha-cta-banner p {
+    font-size: 12.5px !important;
+  }
+
+  /* Footer Mobile Layout */
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  .footer-col.brand-col {
+    grid-column: 1 / -1 !important;
+  }
+
+  /* E-Consultation Page Mobile */
+  .doctors-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .doctor-card {
+    padding: 14px !important;
+  }
+
+  /* User Portal Mobile */
+  .portal-layout {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .portal-sidebar-nav {
+    display: flex !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 6px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .portal-nav-item {
+    white-space: nowrap !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+  }
+
+  /* Admin Portal Mobile */
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .admin-nav-tabs {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+  }
+
+  .admin-nav-tab-btn {
+    white-space: nowrap !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+  }
+
+  .admin-filter-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}
+
+/* ==========================================================================
+   COMPREHENSIVE MOBILE RESPONSIVE STYLESHEET (≤ 768px)
+   Covers: Navbar | Storefront | Consultation | User Portal | Cart | Admin | Footer
+   ========================================================================== */
+@media (max-width: 768px) {
+
+  /* ----------------------------------------
+     GLOBAL
+  ---------------------------------------- */
+  .container {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  section, .section-padding {
+    padding: 16px 0 !important;
+  }
+
+  .section-title, h2 {
+    font-size: 18px !important;
+    line-height: 1.25 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .section-subtitle, .section-desc {
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* ----------------------------------------
+     NAVBAR — Single Horizontal Line
+  ---------------------------------------- */
+  header {
+    padding: 0 !important;
+    height: 50px !important;
+  }
+
+  .header-container {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    height: 50px !important;
+    padding: 0 10px !important;
+  }
+
+  .logo {
+    font-size: 14px !important;
+    gap: 4px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+
+  .logo img {
+    height: 24px !important;
+  }
+
+  /* Mobile nav drawer */
+  nav {
+    position: fixed !important;
+    top: 50px !important;
+    left: -100% !important;
+    width: 80% !important;
+    height: calc(100vh - 50px) !important;
+    background-color: #071e18 !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    padding: 24px 20px !important;
+    gap: 0 !important;
+    transition: left 0.3s ease !important;
+    z-index: 1200 !important;
+  }
+
+  nav.active {
+    left: 0 !important;
+  }
+
+  nav a {
+    color: var(--white) !important;
+    font-size: 14px !important;
+    padding: 12px 0 !important;
+    width: 100% !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+  }
+
+  /* Search bar — flex-shrink in single row */
+  .nav-global-search-container {
+    flex: 1 !important;
+    min-width: 0 !important;
+    max-width: 160px !important;
+    margin: 0 4px !important;
+    flex-shrink: 1 !important;
+  }
+
+  .nav-global-search-container:focus-within {
+    max-width: 200px !important;
+  }
+
+  .nav-search-input-wrapper {
+    position: relative !important;
+  }
+
+  .nav-search-input {
+    padding: 5px 20px 5px 24px !important;
+    font-size: 10.5px !important;
+    border-radius: 14px !important;
+    height: 28px !important;
+    width: 100% !important;
+  }
+
+  .nav-search-icon {
+    left: 7px !important;
+    font-size: 10px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .nav-search-dropdown-panel {
+    position: fixed !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    transform: none !important;
+    max-height: 70vh !important;
+    font-size: 12px !important;
+    z-index: 9999 !important;
+    top: 52px !important; /* Just below the 50px navbar */
+  }
+
+  /* Nav action icons — compact */
+  .nav-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .cart-icon-btn, .notification-icon-btn {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 14px !important;
+    background: none !important;
+  }
+
+  .login-icon-btn {
+    padding: 0 4px !important;
+    font-size: 14px !important;
+  }
+
+  .login-btn-text {
+    display: none !important;
+  }
+
+  .user-auth-menu {
+    position: relative !important;
+  }
+
+  .user-dropdown {
+    right: 0 !important;
+    left: auto !important;
+    min-width: 180px !important;
+  }
+
+  .menu-btn {
+    display: block !important;
+    font-size: 18px !important;
+    padding: 4px !important;
+    color: var(--primary) !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* ----------------------------------------
+     HERO SECTION — Storefront
+  ---------------------------------------- */
+  .full-bg-hero-section {
+    height: 56.25vw !important;  /* 16:9 ratio */
+    min-height: 160px !important;
+    max-height: 260px !important;
+    margin-top: 50px !important; /* Below compact 50px mobile navbar */
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .full-hero-slide {
+    height: 100% !important;
+    min-height: unset !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .hero-content-container {
+    padding: 0 4px !important;
+  }
+
+  .hero-text-box {
+    text-align: center !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  .hero-gold-badge {
+    font-size: 7.5px !important;
+    padding: 1px 6px !important;
+    margin-bottom: 3px !important;
+    display: inline-block !important;
+  }
+
+  .hero-main-title {
+    font-size: 15px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 6px !important;
+  }
+
+  .hero-subtitle {
+    display: none !important;
+  }
+
+  .hero-cta-group {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    margin-bottom: 0 !important;
+    flex-wrap: wrap !important;
+  }
+
+  .btn-hero {
+    padding: 5px 12px !important;
+    font-size: 10px !important;
+  }
+
+  .btn-hero-outline {
+    padding: 5px 10px !important;
+    font-size: 10px !important;
+  }
+
+  .hero-stats-row {
+    display: none !important;
+  }
+
+  .hero-dots-bar {
+    bottom: 4px !important;
+  }
+
+  .hero-arrow-btn {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 9px !important;
+    top: 50% !important;
+  }
+
+  /* ----------------------------------------
+     MEDICINE STORE — Trust Badges
+  ---------------------------------------- */
+  .trust-badges-bar {
+    padding: 8px 0 !important;
+  }
+
+  .trust-badges-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .trust-badge-item {
+    padding: 8px !important;
+    gap: 6px !important;
+    flex-direction: column !important;
+    text-align: center !important;
+    align-items: center !important;
+  }
+
+  .trust-badge-item i {
+    font-size: 16px !important;
+  }
+
+  .trust-badge-item h4 {
+    font-size: 10px !important;
+  }
+
+  .trust-badge-item p {
+    font-size: 9px !important;
+  }
+
+  /* ----------------------------------------
+     MEDICINE STORE — Catalog Section
+  ---------------------------------------- */
+  .storefront-section {
+    padding-top: 16px !important;
+  }
+
+  .section-header-box {
+    margin-bottom: 10px !important;
+  }
+
+  .section-header-box h2 {
+    font-size: 17px !important;
+  }
+
+  .section-header-box p {
+    font-size: 10.5px !important;
+  }
+
+  .section-pill {
+    font-size: 8.5px !important;
+    padding: 2px 8px !important;
+  }
+
+  /* Search & Sort bar */
+  .search-sort-bar {
+    flex-direction: column !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .search-input-wrapper {
+    width: 100% !important;
+  }
+
+  .search-input-wrapper input {
+    font-size: 11px !important;
+    padding: 7px 10px 7px 28px !important;
+  }
+
+  .sort-select {
+    width: 100% !important;
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+  }
+
+  /* Program/Category tag pills */
+  .program-tags {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 4px !important;
+    padding-bottom: 6px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .tag-btn {
+    white-space: nowrap !important;
+    padding: 4px 10px !important;
+    font-size: 10.5px !important;
+    flex-shrink: 0 !important;
+    border-radius: 12px !important;
+  }
+
+  /* Product Cards - STRICT 2 PER ROW */
+  .product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .product-card {
+    padding: 6px !important;
+    border-radius: 8px !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: #fff !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+  }
+
+  .product-badge {
+    font-size: 7.5px !important;
+    padding: 2px 4px !important;
+    top: 4px !important;
+    left: 4px !important;
+  }
+
+  .prescription-badge {
+    font-size: 7.5px !important;
+    padding: 2px 4px !important;
+    top: 4px !important;
+    right: 4px !important;
+  }
+
+  .product-img-box {
+    height: 95px !important;
+    overflow: hidden !important;
+    border-radius: 6px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .product-img-box img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  .product-body {
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+  }
+
+  .product-mfg {
+    font-size: 8px !important;
+    text-transform: uppercase !important;
+    font-weight: 600 !important;
+    color: var(--text-muted) !important;
+    margin-bottom: 2px !important;
+  }
+
+  .product-title {
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    color: var(--text-dark) !important;
+    line-height: 1.25 !important;
+    height: 26px !important;
+    overflow: hidden !important;
+    margin-bottom: 2px !important;
+  }
+
+  .product-rating {
+    font-size: 8.5px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .product-rating .stars i {
+    font-size: 8px !important;
+  }
+
+  .rating-count {
+    font-size: 8px !important;
+  }
+
+  .product-pricing {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 3px !important;
+    flex-wrap: wrap !important;
+    margin-top: 2px !important;
+  }
+
+  .product-pricing .current-price,
+  .product-card .current-price {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    color: var(--primary) !important;
+  }
+
+  .product-pricing .original-price,
+  .product-card .original-price {
+    font-size: 9px !important;
+    text-decoration: line-through !important;
+    color: var(--text-muted) !important;
+  }
+
+  .product-actions {
+    margin-top: 4px !important;
+  }
+
+  .product-actions .btn,
+  .product-actions .btn-sm {
+    width: 100% !important;
+    padding: 4px 4px !important;
+    font-size: 9.5px !important;
+    font-weight: 700 !important;
+    gap: 3px !important;
+    border-radius: 4px !important;
+  }
+
+  /* ----------------------------------------
+     BRAND / WHY AYURVEDA / TESTIMONIALS
+  ---------------------------------------- */
+  .brand-grid, .brands-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .brand-card {
+    padding: 8px 4px !important;
+  }
+
+  .brand-card strong {
+    font-size: 10px !important;
+  }
+
+  .why-ayurveda-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .why-card {
+    padding: 10px 8px !important;
+  }
+
+  .why-card i {
+    font-size: 18px !important;
+  }
+
+  .why-card h4 {
+    font-size: 11.5px !important;
+  }
+
+  .why-card p {
+    font-size: 10px !important;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .testimonial-card {
+    padding: 12px !important;
+  }
+
+  .testimonial-card p {
+    font-size: 11px !important;
+  }
+
+  /* ----------------------------------------
+     CTA BANNER (Dosha/Telehealth)
+  ---------------------------------------- */
+  .dosha-cta-banner, .cta-banner {
+    padding: 16px 12px !important;
+    text-align: center !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    border-radius: 10px !important;
+  }
+
+  .dosha-cta-banner h3 {
+    font-size: 16px !important;
+  }
+
+  .dosha-cta-banner p {
+    font-size: 11px !important;
+  }
+
+  /* ----------------------------------------
+     FOOTER
+  ---------------------------------------- */
+  footer {
+    padding: 20px 0 0 0 !important;
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  .footer-col.brand-col {
+    grid-column: 1 / -1 !important;
+  }
+
+  .footer-col h4 {
+    font-size: 13px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .footer-col ul li, .footer-col p {
+    font-size: 11px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .footer-bottom {
+    padding: 10px 0 !important;
+  }
+
+  .copyright-row p {
+    font-size: 10px !important;
+  }
+
+  /* ----------------------------------------
+     E-CONSULTATION PAGE
+  ---------------------------------------- */
+  #consultation {
+    padding-top: 60px !important;
+  }
+
+  .consultation-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .doctor-directory, .booking-panel {
+    width: 100% !important;
+  }
+
+  .consult-sub-title {
+    font-size: 14px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .doctor-cards-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .doctor-card {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    padding: 10px !important;
+    border-radius: 10px !important;
+  }
+
+  .doc-avatar-wrapper {
+    flex-shrink: 0 !important;
+  }
+
+  .doc-avatar {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 18px !important;
+    line-height: 44px !important;
+    border-radius: 50% !important;
+  }
+
+  .doc-details h4 {
+    font-size: 12.5px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .doc-edu {
+    font-size: 10px !important;
+  }
+
+  .doc-specialties {
+    gap: 3px !important;
+    flex-wrap: wrap !important;
+    margin: 3px 0 !important;
+  }
+
+  .spec-pill {
+    font-size: 9px !important;
+    padding: 1px 6px !important;
+  }
+
+  .doc-meta-row {
+    font-size: 10.5px !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+
+  /* Booking form */
+  .booking-form-box {
+    padding: 12px !important;
+    border-radius: 10px !important;
+  }
+
+  .selected-doctor-banner {
+    padding: 10px !important;
+    gap: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .banner-avatar {
+    font-size: 24px !important;
+    width: 44px !important;
+    height: 44px !important;
+    line-height: 44px !important;
+  }
+
+  .selected-doctor-banner h4 {
+    font-size: 13px !important;
+  }
+
+  .selected-doctor-banner p {
+    font-size: 11px !important;
+  }
+
+  .form-group label {
+    font-size: 11px !important;
+  }
+
+  .form-group input, .form-group textarea, .form-group select {
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+  }
+
+  .time-slots-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .time-slot-btn {
+    padding: 5px 4px !important;
+    font-size: 10px !important;
+    border-radius: 6px !important;
+  }
+
+  /* ----------------------------------------
+     USER PORTAL / DASHBOARD
+  ---------------------------------------- */
+  #dashboard {
+    padding-top: 60px !important;
+  }
+
+  .dashboard-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .dashboard-sidebar {
+    width: 100% !important;
+  }
+
+  .user-profile-summary {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 12px !important;
+    background: var(--bg-light) !important;
+    border-radius: 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .user-profile-summary h4 {
+    font-size: 13px !important;
+    margin: 0 !important;
+  }
+
+  .user-profile-summary p {
+    font-size: 10px !important;
+    margin: 0 !important;
+  }
+
+  .dash-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 4px !important;
+    padding-bottom: 4px !important;
+  }
+
+  .dash-nav-btn {
+    white-space: nowrap !important;
+    padding: 7px 10px !important;
+    font-size: 11px !important;
+    flex-shrink: 0 !important;
+    border-radius: 8px !important;
+    gap: 4px !important;
+  }
+
+  .dashboard-content-box {
+    width: 100% !important;
+  }
+
+  .dashboard-header {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .dashboard-header h3 {
+    font-size: 15px !important;
+  }
+
+  .tracker-stepper {
+    padding: 0 4px !important;
+    margin: 10px 0 !important;
+  }
+
+  /* Order cards */
+  #dashboard .btn {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+  }
+
+  /* ----------------------------------------
+     CART / CHECKOUT PAGE
+  ---------------------------------------- */
+  .cart-checkout-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .checkout-stepper-bar {
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 6px !important;
+    justify-content: flex-start !important;
+  }
+
+  .checkout-stepper-item {
+    padding: 6px 10px !important;
+    font-size: 10.5px !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  /* ----------------------------------------
+     ADMIN PORTAL
+  ---------------------------------------- */
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .admin-nav-tabs {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex-wrap: nowrap !important;
+    gap: 4px !important;
+    padding-bottom: 4px !important;
+  }
+
+  .admin-nav-tab-btn {
+    white-space: nowrap !important;
+    padding: 7px 10px !important;
+    font-size: 11px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .admin-filter-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+  }
+
+  .admin-table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  table {
+    min-width: 540px !important;
+    font-size: 11px !important;
+  }
+
+  th, td {
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+  }
+
+  /* ----------------------------------------
+     MODALS (Login / Video Consultation)
+  ---------------------------------------- */
+  .modal-overlay .modal-box,
+  .modal-overlay .glass-panel {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    padding: 20px 16px !important;
+    border-radius: 12px !important;
+  }
+
+  .modal-box h2 {
+    font-size: 18px !important;
+  }
+
+  /* ----------------------------------------
+     CART / CHECKOUT PAGE — Mobile
+  ---------------------------------------- */
+
+  /* Stack main content + sidebar vertically */
+  .cart-checkout-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  /* Stepper bar: scrollable horizontal row */
+  .checkout-stepper-bar {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    padding-bottom: 6px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .checkout-stepper-item {
+    white-space: nowrap !important;
+    padding: 7px 12px !important;
+    font-size: 11px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Address form rows → single column on mobile */
+  .address-form-row-2,
+  .address-form-row-3 {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* Order Summary sidebar stays full-width, unsticky */
+  .cart-checkout-grid > div:last-child > div {
+    position: static !important;
+  }
+}
+
+/* ==========================================================================
+   EXTRA SMALL SCREENS (≤ 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 5px !important;
+  }
+
+  .product-img-box {
+    height: 80px !important;
+  }
+
+  .hero-main-title {
+    font-size: 14px !important;
+  }
+
+  .brand-grid, .brands-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .why-ayurveda-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .time-slots-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .checkout-stepper-item {
+    font-size: 9.5px !important;
+    padding: 5px 8px !important;
+  }
+}

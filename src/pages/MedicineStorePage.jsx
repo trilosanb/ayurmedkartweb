@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { MEDICINES } from '../data/medicines';
 
 export const MedicineStorePage = () => {
+  const navigate = useNavigate();
   const { addToCart, startVideoCall } = useApp();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortVal, setSortVal] = useState("default");
@@ -12,23 +14,23 @@ export const MedicineStorePage = () => {
 
   const slides = [
     {
-      badge: "AUTHENTIC KERALA AYURVEDA",
-      title: "Arya Vaidya Sala Kottakkal Formulations",
-      subtitle: "Discover authentic classical Kashayams, Arishtams, Churnams, and Oils crafted using centuries-old Vedic recipes.",
+      badge: "TRUSTED BY 50,000+ PATIENTS",
+      title: "Order Ayurvedic Medicine Online",
+      subtitle: "Get all popular brands delivered straight to your doorstep with certified express delivery across India.",
       bgImage: "/kottakkal_hero.png",
-      tag: "Direct Pharmacy Sourced"
+      tag: "100% Genuine Formulations"
     },
     {
-      badge: "NATURAL IMMUNITY & VITALITY",
-      title: "Rejuvenate Your Body with Pure Herbs",
-      subtitle: "Handpicked Chyawanprash, organic Amla, Giloy, and Ashwagandha to fortify your immune system naturally.",
+      badge: "ALL POPULAR BRANDS IN ONE PLACE",
+      title: "Kottakkal, Dabur, Baidyanath & Himalaya",
+      subtitle: "Shop classical Kashayams, Arishtams, Churnams & wellness care from India's most trusted pharmacies.",
       bgImage: "/chyawanprash_hero.png",
-      tag: "100% Herbal & Pure"
+      tag: "Authentic Pharmacy Sourced"
     },
     {
-      badge: "JOINT CARE & RECOVERY",
-      title: "Traditional Pain Relief & Dhanwantaram Oils",
-      subtitle: "Fast-acting relief for joint pain, muscle stiffness, and backache with classical warm oil therapy.",
+      badge: "EXPRESS DELIVERY ACROSS INDIA",
+      title: "Genuine Medicines & Online Doctor Consultation",
+      subtitle: "Fast doorstep shipping to over 25,000+ pincodes across India with secure clinical verification.",
       bgImage: "/dhanwantaram_hero.png",
       tag: "Certified Clinical Efficacy"
     }
@@ -127,8 +129,8 @@ export const MedicineStorePage = () => {
       {/* 1. HERO SLIDER SECTION */}
       <section className="full-bg-hero-section">
         {slides.map((slide, idx) => (
-          <div 
-            key={idx} 
+          <div
+            key={idx}
             className={`full-hero-slide ${idx === activeSlide ? 'active' : ''}`}
             style={{ backgroundImage: `url(${slide.bgImage})` }}
           >
@@ -148,8 +150,8 @@ export const MedicineStorePage = () => {
                   }}>
                     <i className="fas fa-shopping-bag" style={{ marginRight: '8px' }}></i> Shop Storefront
                   </button>
-                  <button className="btn btn-hero-outline" onClick={() => startVideoCall("Dr. Aravind Sharma")}>
-                    <i className="fas fa-video" style={{ marginRight: '8px' }}></i> Consult Doctor Live
+                  <button className="btn btn-hero-outline" onClick={() => navigate('/consultation')}>
+                    <i className="fas fa-user-md" style={{ marginRight: '8px' }}></i> Consult Doctor
                   </button>
                 </div>
 
@@ -186,8 +188,8 @@ export const MedicineStorePage = () => {
         {/* Slide Indicators */}
         <div className="hero-dots-bar">
           {slides.map((_, idx) => (
-            <span 
-              key={idx} 
+            <span
+              key={idx}
               className={`hero-dot ${idx === activeSlide ? 'active' : ''}`}
               onClick={() => setActiveSlide(idx)}
             ></span>
@@ -230,9 +232,9 @@ export const MedicineStorePage = () => {
           <div className="search-sort-bar">
             <div className="search-input-wrapper">
               <i className="fas fa-search"></i>
-              <input 
-                type="text" 
-                placeholder="Search medicines by name, ingredients (e.g. Ashwagandha, Amla, Triphala)..." 
+              <input
+                type="text"
+                placeholder="Search medicines by name, ingredients (e.g. Ashwagandha, Amla, Triphala)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -260,8 +262,8 @@ export const MedicineStorePage = () => {
               { id: "stress", label: "Stress & Sleep" },
               { id: "skin", label: "Skin & Hair Care" }
             ].map(tag => (
-              <button 
-                key={tag.id} 
+              <button
+                key={tag.id}
                 className={`tag-btn ${activeCondition === tag.id ? 'active' : ''}`}
                 onClick={() => setActiveCondition(tag.id)}
               >
@@ -330,8 +332,8 @@ export const MedicineStorePage = () => {
 
           <div className="brand-cards-grid">
             {famousBrands.map((b, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className={`brand-showcase-card ${selectedBrand === b.brandKey ? 'active' : ''}`}
                 onClick={() => setSelectedBrand(selectedBrand === b.brandKey ? "" : b.brandKey)}
               >
